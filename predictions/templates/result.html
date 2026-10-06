@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Prediction Result - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .result-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .result-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        color: var(--text);
+    }
+
+    .result-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .result-header h2 {
+        margin: 0 0 0.4rem;
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .result-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .image-card {
+        background: var(--surface-alt);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+    }
+
+    .result-image {
+        width: 100%;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .analysis-card {
+        background: var(--surface-alt);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+    }
+
+    .result-kpi {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .kpi {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+        border-radius: var(--radius-lg);
+        background: var(--brand-soft);
+        border: 1px solid rgba(109, 74, 255, 0.16);
+    }
+
+    .kpi-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--brand);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .kpi-content {
+        flex: 1;
+    }
+
+    .kpi-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .kpi-value {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text);
+    }
+
+    .info-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        border: 1px solid var(--border);
+        margin-top: 1.5rem;
+    }
+
+    .info-header {
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .info-content {
+        color: var(--text-muted);
+        line-height: 1.65;
+        font-size: 0.95rem;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 0.8rem 1.25rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 992px) {
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-panel {
+            padding: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="result-wrap fade-in">
+    <section class="result-panel">
+        <div class="result-header">
+            <h2><i class="fas fa-chart-line"></i> Prediction Result</h2>
+            <p>Review the detected class, confidence, and recommended guidance.</p>
+        </div>
+
+        <div class="result-grid">
+            <div class="image-card">
+                <img src="{{ uploaded_file_url }}" alt="Uploaded Image" class="result-image">
+            </div>
+
+            <div class="analysis-card">
+                <div class="result-kpi mb-4">
+                    <div class="kpi">
+                        <div class="kpi-icon">
+                            <i class="fas fa-diagnosis"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Predicted Class</div>
+                            <div class="kpi-value">{{ predicted_class }}</div>
+                        </div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <div class="kpi-label">Confidence</div>
+                            <div class="kpi-value">{{ confidence }}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+    <div class="info-header">
+        <i class="fas fa-circle-info"></i> Information & Recommendations
+    </div>
+
+    <div class="info-content">
+
+        {% if disease_info %}
+            <strong>About:</strong><br>
+            {{ disease_info.about }}<br><br>
+
+            <strong>{{ disease_info.medicine_label }}:</strong><br>
+            {% for med in disease_info.medicine %}&bull; {{ med }}<br>{% endfor %}
+            <br>
+
+            <strong>Recommendation:</strong><br>
+            {{ disease_info.recommendation }}
+        {% else %}
+            No specific information is available for this prediction.
+            Please consult an agricultural expert for proper diagnosis.
+        {% endif %}
+
+    </div>
+</div>
+
+                <a href="{% url 'predict' %}" class="btn btn-custom w-100 mt-4">
+                    <i class="fas fa-upload me-2"></i> Upload Another Image
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Django database and uploads
+db.sqlite3
+media/
+staticfiles/
+*.log
+
+# ML / AI model files
+*.h5
+*.keras
+*.pth
+*.pt
+
+# Virtual environments and local configuration
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Credentials and local certificates
+firebase-service-account.json
+serviceAccountKey.json
+*.key
+auto.crt
+
+# Temporary files and downloaded binaries
+.tmp-yolo/
+deployment/mediamtx_bin/

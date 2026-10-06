@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+
+{% block title %}Watering - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .auto-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .auto-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+    }
+
+    .auto-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .auto-header h2 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .auto-header h2 i {
+        color: var(--brand);
+        margin-right: 10px;
+    }
+
+    .auto-header p {
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+    }
+
+    .auto-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        margin-bottom: 20px;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .auto-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .auto-card h4 {
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .auto-card h4 i {
+        color: var(--brand);
+        font-size: 1.05rem;
+    }
+
+    .auto-card p {
+        color: var(--text-muted);
+        margin-bottom: 18px;
+        line-height: 1.6;
+    }
+
+    .daily-watering-card {
+        border: 2px solid var(--brand);
+    }
+
+    .daily-watering-time {
+        color: var(--brand);
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.15;
+        margin: 16px 0 8px;
+    }
+
+    .daily-watering-label {
+        display: inline-block;
+        padding: 5px 12px;
+        border: 1px solid var(--brand);
+        border-radius: 999px;
+        color: var(--brand);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .daily-watering-rule {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    .daily-watering-rule i {
+        color: var(--brand);
+        margin-top: 5px;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 12px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    .toggle-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        justify-content: space-between;
+    }
+
+    /* iOS-style toggle switch */
+    .ios-toggle {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 30px;
+    }
+
+    .ios-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #d3d5e0;
+        transition: 0.2s ease;
+        border-radius: 30px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 24px;
+        width: 24px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.2s ease;
+        border-radius: 50%;
+        box-shadow: var(--shadow-sm);
+    }
+
+    input:checked + .toggle-slider {
+        background: var(--accent);
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(22px);
+    }
+
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .status-indicator.text-success {
+        background: rgba(22, 166, 115, 0.1);
+        color: #14624a;
+    }
+
+    .status-indicator.text-danger {
+        background: var(--danger-soft);
+        color: #97232a;
+    }
+
+    .sensor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+    }
+
+    .sensor-card {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .sensor-card h5 {
+        color: var(--text);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+
+    .sensor-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--brand);
+        margin-bottom: 6px;
+    }
+
+    .sensor-status {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .auto-wrap {
+            padding: 16px;
+        }
+
+        .auto-panel {
+            padding: 24px;
+        }
+
+        .auto-card {
+            padding: 22px;
+        }
+
+        .toggle-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .sensor-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(16, 17, 30, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .custom-modal-overlay.show {
+        display: flex;
+    }
+
+    .custom-modal {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .custom-modal h3 {
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 1.3rem;
+    }
+
+    .custom-modal p {
+        color: var(--text-muted);
+        margin-bottom: 22px;
+        line-height: 1.6;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+        font-size: 0.95rem;
+    }
+
+    .modal-btn-cancel {
+        background-color: var(--surface-alt);
+        color: var(--text);
+    }
+
+    .modal-btn-cancel:hover {
+        background-color: var(--border);
+    }
+
+    .modal-btn-confirm {
+        background: var(--danger);
+        color: white;
+    }
+
+    .modal-btn-confirm:hover {
+        background: #c9333a;
+    }
+</style>
+<script>
+    let pendingForm = null;
+
+    function handleToggleChange(checkbox, toggleType) {
+        // Always show confirmation for both ON and OFF
+        pendingForm = checkbox.form;
+        const action = checkbox.checked ? 'Enable' : 'Disable';
+        showConfirmation(toggleType, action);
+        // Reset checkbox state until user confirms
+        checkbox.checked = !checkbox.checked;
+        return false;
+    }
+
+    function showConfirmation(toggleType, action) {
+        const modal = document.getElementById('confirmModal');
+        const title = document.getElementById('modalTitle');
+        const message = document.getElementById('modalMessage');
+        title.textContent = `${action} ${toggleType}?`;
+        message.textContent = `Are you sure you want to ${action.toLowerCase()} this feature?`;
+        modal.classList.add('show');
+    }
+
+    function confirmAction() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('show');
+        if (pendingForm) {
+            pendingForm.submit();
+        }
+    }
+
+    function cancelAction() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('show');
+        pendingForm = null;
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('confirmModal');
+        if (event.target === modal) {
+            cancelAction();
+        }
+    });
+
+    function confirmScheduleUpdate() {
+        return confirm('Are you sure you want to update the watering schedule?');
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="auto-wrap fade-in">
+    <section class="auto-panel">
+        <div class="auto-header">
+            <h2><i class="fas fa-tint"></i> Watering </h2>
+            <p>Daily automatic watering with a weather check before each run.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="auto-card">
+            <h4><i class="fas fa-tachometer-alt"></i> Real-Time Sensor Readings <span id="watering-feed-status" class="{% if pi_online %}text-success{% else %}text-danger{% endif %}">{% if pi_online %}Online{% else %}Offline{% endif %}</span></h4>
+            <div class="sensor-grid">
+                <div class="sensor-card">
+                    <h5><i class="fas fa-seedling me-2"></i>Soil Moisture</h5>
+                    <div class="sensor-value"><span id="watering-soil_moisture">{{ soil_moisture }}</span>%</div>
+                    <div class="sensor-status">{{ soil_status }}</div>
+                </div>
+                <div class="sensor-card">
+                    <h5><i class="fas fa-thermometer-half me-2"></i>Temperature</h5>
+                    <div class="sensor-value"><span id="watering-temperature">{{ temperature }}</span>°C</div>
+                    <div class="sensor-status">{{ climate_status }}</div>
+                </div>
+                <div class="sensor-card">
+                    <h5><i class="fas fa-tint me-2"></i>Humidity</h5>
+                    <div class="sensor-value"><span id="watering-humidity">{{ humidity }}</span>%</div>
+                    <div class="sensor-status">Relative Humidity</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="auto-card daily-watering-card" aria-labelledby="daily-watering-title">
+                    <h4 id="daily-watering-title"><i class="fas fa-calendar-check" aria-hidden="true"></i> Automatic Watering</h4>
+                    <span class="daily-watering-label">Permanent daily schedule</span>
+                    <div class="daily-watering-time">6:00 AM</div>
+                    <p><strong>Every morning</strong> &middot; Philippines time (Asia/Manila)</p>
+                    <div class="daily-watering-rule">
+                        <i class="fas fa-cloud-rain" aria-hidden="true"></i>
+                        <p><strong>Rain detected? Watering is skipped.</strong><br>Checks current weather before watering. Rain, drizzle, thunderstorms or unavailable weather data skip that day's run.</p>
+                    </div>
+                    <p class="mb-0">Keep the farm controller online for scheduled watering.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="auto-card">
+                    <h4><i class="fas fa-hand-paper"></i> Manual Watering</h4>
+                    <p>Trigger immediate watering</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="manual_water">
+                <input type="hidden" name="enabled" value="{% if manual_watering_active %}true{% else %}false{% endif %}">
+                        <div class="toggle-container">
+                            <span class="fw-bold">Manual Watering</span>
+                            <label class="ios-toggle">
+                                <input type="checkbox" {% if manual_watering_active %}checked{% endif %} onchange="this.form.elements.enabled.value = this.checked ? 'true' : 'false'; handleToggleChange(this, 'Manual Watering')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="custom-modal-overlay" id="confirmModal">
+    <div class="custom-modal">
+        <h3 id="modalTitle">Confirm Action?</h3>
+        <p id="modalMessage">Are you sure you want to perform this action?</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="cancelAction()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmAction()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_script %}
+<script>
+let wateringFeedPending = false;
+async function refreshWateringFeed() {
+    if (wateringFeedPending) return;
+    wateringFeedPending = true;
+    let data = {pi_online: false};
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+        const response = await fetch('{% url "get_sensor_data" %}', {cache: 'no-store', signal: controller.signal});
+        if (response.ok) data = await response.json();
+    } catch (_) {} finally { clearTimeout(timer); wateringFeedPending = false; }
+    const online = data.pi_online === true;
+    const badge = document.getElementById('watering-feed-status');
+    badge.textContent = online ? 'Online' : 'Offline';
+    badge.className = online ? 'text-success' : 'text-danger';
+    for (const key of ['soil_moisture', 'temperature', 'humidity']) {
+        const element = document.getElementById('watering-' + key);
+        element.textContent = online ? (data[key] ?? 0) : 0;
+        element.closest('.sensor-card').querySelector('.sensor-status').textContent = online ? 'Live reading' : 'Offline';
+    }
+}
+refreshWateringFeed();
+setInterval(refreshWateringFeed, 5000);
+</script>
+{% endblock %}

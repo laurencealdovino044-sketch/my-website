@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .profile-page {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 0;
+    }
+
+    .profile-card {
+        width: min(760px, 100%);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+    }
+
+    .profile-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .user-avatar {
+        width: 84px;
+        height: 84px;
+        border-radius: var(--radius-lg);
+        display: grid;
+        place-items: center;
+        background: var(--brand-gradient);
+        color: #fff;
+        font-size: 2.1rem;
+        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .profile-hero h2 {
+        margin: 0;
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .profile-hero p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .profile-info {
+        display: grid;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+    }
+
+    .profile-info p {
+        margin: 0;
+        padding: 0.85rem 1rem;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .profile-actions .btn {
+        min-width: 160px;
+        border-radius: var(--radius-md);
+        padding: 0.7rem 1.25rem;
+        font-weight: 600;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-logout {
+        background: var(--surface-alt);
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+
+    .btn-logout:hover {
+        background: var(--danger-soft);
+        color: #97232a;
+    }
+
+    @media (max-width: 768px) {
+        .profile-card {
+            padding: 1.25rem;
+        }
+
+        .profile-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page fade-in">
+    <section class="profile-card">
+        <div class="profile-hero">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2><i class="fas fa-user"></i> User Profile</h2>
+            <p>Manage your account information and settings.</p>
+        </div>
+
+        <div class="card border-0 bg-transparent">
+            <div class="card-header bg-transparent px-0 pt-0 border-0 fw-bold text-success">
+                <i class="fas fa-info-circle"></i> Profile Information
+            </div>
+            <div class="card-body px-0 pb-0">
+                <div class="profile-info">
+                    <p><strong><i class="fas fa-user"></i> Username:</strong> {{ user.username }}</p>
+                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
+                    <p><strong><i class="fas fa-calendar-alt"></i> Joined on:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-custom">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'notification_settings' %}" class="btn btn-logout">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

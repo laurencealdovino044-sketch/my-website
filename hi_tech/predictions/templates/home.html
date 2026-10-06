@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .home-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .home-panel {
+        background: rgba(255, 255, 255, 0.96);
+        color: #203126;
+        border-radius: 28px;
+        box-shadow: 0 24px 60px rgba(13, 7, 19, 0.2);
+        padding: 2rem;
+    }
+
+    .home-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .home-header h2 {
+        margin: 0 0 0.5rem;
+        color: #173f2a;
+        font-weight: 800;
+    }
+
+    .home-header p {
+        margin: 0;
+        color: #5c7367;
+    }
+
+    .home-card {
+        background: #f4f8f5;
+        border: 1px solid #dde8e0;
+        border-radius: 18px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn-custom {
+        background: #1f7a4f;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 0.85rem 1.2rem;
+        font-weight: 700;
+    }
+
+    .btn-custom:hover {
+        background: #175e3d;
+        color: #fff;
+    }
+
+    .prediction-result {
+        margin-top: 1.5rem;
+        background: linear-gradient(135deg, #1f7a4f, #2f9e68);
+        color: #fff;
+        border-radius: 22px;
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .home-panel {
+            padding: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-wrap fade-in">
+    <section class="home-panel">
+        <div class="home-header">
+            <h2><i class="fas fa-leaf"></i> Upload Your Plant Image</h2>
+            <p>Predict the disease status while keeping navigation in the sidebar.</p>
+        </div>
+
+        <form action="{% url 'predict' %}" method="POST" enctype="multipart/form-data" class="home-card">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="image" class="form-label fw-bold">Select Image</label>
+                <input type="file" class="form-control" id="image" name="image" required>
+            </div>
+            <button type="submit" class="btn btn-custom">Upload and Predict</button>
+        </form>
+
+        {% if uploaded_file_url %}
+            <div class="prediction-result text-center">
+                <h3 class="mb-3">Prediction Result</h3>
+                <img src="{{ uploaded_file_url }}" alt="Uploaded Image" class="img-fluid rounded-4 mb-3">
+                <p class="mb-1"><strong>Predicted Class:</strong> {{ predicted_class }}</p>
+                <p class="mb-0"><strong>Confidence:</strong> {{ confidence }}%</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

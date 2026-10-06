@@ -1,0 +1,514 @@
+{% extends 'base.html' %}
+
+{% block title %}Spraying - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .auto-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .auto-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+    }
+
+    .auto-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .auto-header h2 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .auto-header h2 i {
+        color: var(--brand);
+        margin-right: 10px;
+    }
+
+    .auto-header p {
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 600px;
+    }
+
+    .auto-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        margin-bottom: 20px;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .auto-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .auto-card h4 {
+        margin: 0 0 14px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .auto-card h4 i {
+        color: var(--brand);
+        font-size: 1.1rem;
+        background: var(--brand-soft);
+        padding: 8px;
+        border-radius: var(--radius-sm);
+    }
+
+    .auto-card p {
+        margin: 0 0 18px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+
+    .auto-card p:last-child {
+        margin-bottom: 0;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 12px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    .toggle-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .toggle-container .fw-bold {
+        color: var(--text);
+        font-size: 1.05rem;
+    }
+
+    /* iOS-style toggle switch */
+    .ios-toggle {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 30px;
+    }
+
+    .ios-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #d3d5e0;
+        transition: 0.2s ease;
+        border-radius: 30px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 24px;
+        width: 24px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.2s ease;
+        border-radius: 50%;
+        box-shadow: var(--shadow-sm);
+    }
+
+    input:checked + .toggle-slider {
+        background: var(--accent);
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(22px);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        background: var(--surface);
+    }
+
+    .form-control:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px var(--brand-soft);
+        background: var(--surface);
+    }
+
+    .text-success {
+        color: #14624a !important;
+        font-weight: 600;
+    }
+
+    .text-danger {
+        color: #97232a !important;
+        font-weight: 600;
+    }
+
+    .text-warning {
+        color: #92530c !important;
+        font-weight: 600;
+    }
+
+    .alert {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        margin-bottom: 24px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .auto-wrap {
+            padding: 16px;
+        }
+
+        .auto-panel {
+            padding: 24px;
+        }
+
+        .auto-card {
+            padding: 22px;
+        }
+
+        .toggle-container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .row.g-3 {
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 1rem;
+        }
+    }
+
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(16, 17, 30, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .custom-modal-overlay.show {
+        display: flex;
+    }
+
+    .custom-modal {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        max-width: 420px;
+        width: 90%;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .custom-modal h3 {
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 1.3rem;
+    }
+
+    .custom-modal p {
+        color: var(--text-muted);
+        margin-bottom: 22px;
+        line-height: 1.6;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+        font-size: 0.95rem;
+    }
+
+    .modal-btn-cancel {
+        background-color: var(--surface-alt);
+        color: var(--text);
+    }
+
+    .modal-btn-cancel:hover {
+        background-color: var(--border);
+    }
+
+    .modal-btn-confirm {
+        background: var(--accent);
+        color: white;
+    }
+
+    .modal-btn-confirm:hover {
+        background: #12805c;
+    }
+
+    @media (max-width: 480px) {
+        .auto-panel {
+            padding: 20px;
+        }
+
+        .auto-card {
+            padding: 20px;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 12px 20px;
+        }
+
+        .schedule-toggle-button {
+            width: 100%;
+        }
+    }
+</style>
+<script>
+    let pendingManualSprayForm = null;
+    let pendingSprayScheduleForm = null;
+
+    function handleManualSprayToggle(checkbox) {
+        pendingManualSprayForm = checkbox.form;
+        const action = checkbox.checked ? 'Enable' : 'Disable';
+        showManualSprayConfirmation(action);
+        checkbox.checked = !checkbox.checked;
+        return false;
+    }
+
+    function showManualSprayConfirmation(action) {
+        const modal = document.getElementById('manualSprayConfirmModal');
+        const title = document.getElementById('manualSprayModalTitle');
+        const message = document.getElementById('manualSprayModalMessage');
+        title.textContent = `${action} Manual Spraying?`;
+        message.textContent = `Are you sure you want to ${action.toLowerCase()} manual spraying?`;
+        modal.classList.add('show');
+    }
+
+    function confirmManualSprayAction() {
+        const modal = document.getElementById('manualSprayConfirmModal');
+        modal.classList.remove('show');
+        if (pendingManualSprayForm) {
+            pendingManualSprayForm.submit();
+        }
+    }
+
+    function cancelManualSprayAction() {
+        const modal = document.getElementById('manualSprayConfirmModal');
+        modal.classList.remove('show');
+        pendingManualSprayForm = null;
+    }
+
+    document.addEventListener('click', function(event) {
+        const manualModal = document.getElementById('manualSprayConfirmModal');
+        const scheduleModal = document.getElementById('scheduleSprayConfirmModal');
+        if (event.target === manualModal) {
+            cancelManualSprayAction();
+        }
+        if (event.target === scheduleModal) {
+            cancelSprayScheduleAction();
+        }
+    });
+
+    function handleSprayScheduleToggle(checkbox) {
+        pendingSprayScheduleForm = checkbox.form;
+        const action = checkbox.checked ? 'Enable' : 'Disable';
+        showSprayScheduleConfirmation(action);
+        checkbox.checked = !checkbox.checked;
+        return false;
+    }
+
+    function showSprayScheduleConfirmation(action) {
+        const modal = document.getElementById('scheduleSprayConfirmModal');
+        const title = document.getElementById('scheduleSprayModalTitle');
+        const message = document.getElementById('scheduleSprayModalMessage');
+        title.textContent = `${action} Automated Spraying?`;
+        message.textContent = `Are you sure you want to ${action.toLowerCase()} automated spraying?`;
+        modal.classList.add('show');
+    }
+
+    function confirmSprayScheduleAction() {
+        const modal = document.getElementById('scheduleSprayConfirmModal');
+        modal.classList.remove('show');
+        if (pendingSprayScheduleForm) {
+            pendingSprayScheduleForm.submit();
+        }
+    }
+
+    function cancelSprayScheduleAction() {
+        const modal = document.getElementById('scheduleSprayConfirmModal');
+        modal.classList.remove('show');
+        pendingSprayScheduleForm = null;
+    }
+
+    function confirmScheduleUpdate() {
+        return confirm('Are you sure you want to update the spraying schedule?');
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="auto-wrap fade-in">
+    <section class="auto-panel">
+        <div class="auto-header">
+            <h2><i class="fas fa-spray-can"></i> Chemical Spraying </h2>
+            <p></p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="auto-card">
+            <h4><i class="fas fa-hand-paper"></i> Manual Spraying Control</h4>
+            <p>Trigger immediate chemical spraying for disease treatment.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="manual_spray">
+                <input type="hidden" name="enabled" value="{% if manual_spraying_active %}true{% else %}false{% endif %}">
+                <div class="toggle-container">
+                    <span class="fw-bold">Manual Spraying</span>
+                    <label class="ios-toggle">
+                        <input type="checkbox" {% if manual_spraying_active %}checked{% endif %} onchange="this.form.elements.enabled.value = this.checked ? 'true' : 'false'; handleManualSprayToggle(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        
+
+        <div class="auto-card">
+            <h4><i class="fas fa-clock"></i> Automated Spraying Schedule</h4>
+            <p><strong>Status:</strong> {% if spraying_schedule.active %}<span class="text-success">Active</span>{% else %}<span class="text-danger">Inactive</span>{% endif %}</p>
+            <p><strong>Start From:</strong> <span class="text-primary">{{ spraying_start_datetime }}</span></p>
+            {% if next_chemical_application %}
+              <p class="mb-2">
+                <i class="fas fa-flask me-1"></i>
+                Pending chemical task due
+                <strong>{{ next_chemical_application.due_date|date:"M d, Y" }}</strong>
+                ({{ next_chemical_application.deficiency }}).
+                {% if not spraying_schedule.active %}
+                  <span class="text-danger">Switch Automated Spraying on for it to run.</span>
+                {% endif %}
+              </p>
+            {% endif %}
+            
+            <form method="post" class="mb-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_spray_schedule">
+                <div class="toggle-container {% if spraying_schedule.active %}active{% endif %}">
+                    <span class="fw-bold">Automated Spraying</span>
+                    <label class="ios-toggle">
+                        <input type="checkbox" {% if spraying_schedule.active %}checked{% endif %} onchange="handleSprayScheduleToggle(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </form>
+
+            <form method="post" onsubmit="return confirmScheduleUpdate()">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_spray_schedule">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label for="spray_start_datetime" class="form-label">Start Date & Time (Manila)</label>
+                        <input type="datetime-local" class="form-control" id="spray_start_datetime" name="spray_start_datetime" value="{{ spraying_start_datetime }}" required>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-custom mt-3">Update Schedule</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<div class="custom-modal-overlay" id="manualSprayConfirmModal">
+    <div class="custom-modal">
+        <h3 id="manualSprayModalTitle">Confirm Manual Spraying</h3>
+        <p id="manualSprayModalMessage">Are you sure you want to perform this action?</p>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn modal-btn-cancel" onclick="cancelManualSprayAction()">Cancel</button>
+            <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmManualSprayAction()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div class="custom-modal-overlay" id="scheduleSprayConfirmModal">
+    <div class="custom-modal">
+        <h3 id="scheduleSprayModalTitle">Confirm Automated Spraying</h3>
+        <p id="scheduleSprayModalMessage">Are you sure you want to perform this action?</p>
+        <div class="modal-buttons">
+            <button type="button" class="modal-btn modal-btn-cancel" onclick="cancelSprayScheduleAction()">Cancel</button>
+            <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmSprayScheduleAction()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

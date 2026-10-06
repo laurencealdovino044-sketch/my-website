@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .notify-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .notify-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+    }
+
+    .notify-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .notify-header h2 {
+        margin: 0 0 0.4rem;
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .notify-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .notify-section {
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        border-radius: var(--radius-md);
+        padding: 1.15rem 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .notify-section h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 0.9rem;
+        color: var(--text);
+    }
+
+    .notify-section .form-label {
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .notify-section .form-control {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        padding: 0.65rem 0.9rem;
+    }
+
+    .notify-section .form-control:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 0.2rem var(--brand-soft);
+    }
+
+    .notify-hint {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0.35rem 0 0;
+    }
+
+    .channel-state {
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 0.15rem 0.65rem;
+        border: 1px solid var(--border);
+    }
+
+    .channel-state.ready {
+        background: var(--brand-soft);
+        color: var(--brand-dark);
+        border-color: transparent;
+    }
+
+    .channel-state.missing {
+        background: var(--danger-soft);
+        color: #97232a;
+        border-color: transparent;
+    }
+
+    .notify-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .notify-actions .btn {
+        min-width: 180px;
+        border-radius: var(--radius-md);
+        padding: 0.7rem 1.25rem;
+        font-weight: 600;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-test {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+        .notify-panel {
+            padding: 1.25rem;
+        }
+
+        .notify-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notify-wrap fade-in">
+    <section class="notify-panel">
+        <div class="notify-header">
+            <h2><i class="fas fa-bell"></i> Notifications</h2>
+            <p>Get an alert the moment a scan finds a disease, even when you are away from the dashboard.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'notification_settings' %}">
+            {% csrf_token %}
+
+            <div class="notify-section">
+                <h3>
+                    <i class="fas fa-desktop"></i> In the dashboard
+                    <span class="channel-state ready">Always available</span>
+                </h3>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="web_enabled" name="web_enabled"
+                           {% if preference.web_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="web_enabled">
+                        Show alerts in the notification bell
+                    </label>
+                </div>
+
+                <p class="notify-hint" id="pushState"></p>
+                <button type="button" class="btn btn-test" id="enablePushBtn">
+                    <i class="fas fa-bolt"></i> Enable desktop pop-ups
+                </button>
+                <p class="notify-hint">
+                    Pop-ups appear while the dashboard is open in a browser tab. The bell keeps
+                    every alert either way, so nothing is missed when the tab is closed.
+                </p>
+            </div>
+
+            <div class="notify-section">
+                <h3>
+                    <i class="fas fa-envelope"></i> E-mail (Gmail)
+                    {% if email_configured %}
+                        <span class="channel-state ready">Server ready</span>
+                    {% else %}
+                        <span class="channel-state missing">Server not configured</span>
+                    {% endif %}
+                </h3>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="email_enabled" name="email_enabled"
+                           {% if preference.email_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="email_enabled">Send alerts to my e-mail</label>
+                </div>
+
+                <label for="email" class="form-label">E-mail address</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}"
+                       placeholder="you@gmail.com">
+                {% if not email_configured %}
+                    <p class="notify-hint">
+                        The server has no Gmail account set. Ask the administrator to set
+                        <code>GMAIL_ADDRESS</code> and <code>GMAIL_APP_PASSWORD</code>; until then e-mails are only
+                        written to the server console.
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="notify-section">
+                <h3>
+                    <i class="fas fa-comment-sms"></i> SMS
+                    {% if sms_configured %}
+                        <span class="channel-state ready">{{ sms_provider|title }}</span>
+                    {% else %}
+                        <span class="channel-state missing">Gateway not configured</span>
+                    {% endif %}
+                </h3>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="sms_enabled" name="sms_enabled"
+                           {% if preference.sms_enabled %}checked{% endif %}>
+                    <label class="form-check-label" for="sms_enabled">Send alerts to my mobile number</label>
+                </div>
+
+                <label for="phone_number" class="form-label">Mobile number</label>
+                <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                       value="{{ preference.phone_number }}" placeholder="09171234567">
+                <p class="notify-hint">Type it as 09171234567 or +639171234567 - both are accepted.</p>
+            </div>
+
+            <div class="notify-section">
+                <h3><i class="fas fa-sliders"></i> What to send</h3>
+
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="notify_on_detection"
+                           name="notify_on_detection" {% if preference.notify_on_detection %}checked{% endif %}>
+                    <label class="form-check-label" for="notify_on_detection">
+                        Disease or pest detected by a scan
+                    </label>
+                </div>
+
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="notify_healthy_results"
+                           name="notify_healthy_results" {% if preference.notify_healthy_results %}checked{% endif %}>
+                    <label class="form-check-label" for="notify_healthy_results">
+                        Also tell me when a scan comes back healthy
+                    </label>
+                </div>
+
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="notify_on_schedule"
+                           name="notify_on_schedule" {% if preference.notify_on_schedule %}checked{% endif %}>
+                    <label class="form-check-label" for="notify_on_schedule">
+                        Fertilizer or chemical application scheduled
+                    </label>
+                </div>
+            </div>
+
+            <div class="notify-actions">
+                <button type="submit" class="btn btn-custom">
+                    <i class="fas fa-floppy-disk"></i> Save Settings
+                </button>
+            </div>
+        </form>
+
+        <form method="POST" action="{% url 'send_test_notification' %}" class="mt-3">
+            {% csrf_token %}
+            <div class="notify-actions">
+                <button type="submit" class="btn btn-test">
+                    <i class="fas fa-paper-plane"></i> Send Test Alert
+                </button>
+                <a href="{% url 'profile' %}" class="btn btn-test">
+                    <i class="fas fa-arrow-left"></i> Back to Profile
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    // Desktop pop-ups are a browser permission, not a server setting: the page can only
+    // ask, and the answer lives in the browser. Reflect the real state so the button
+    // never claims something the browser has already refused.
+    (function () {
+        const button = document.getElementById('enablePushBtn');
+        const state = document.getElementById('pushState');
+        if (!button || !state) {
+            return;
+        }
+
+        function render() {
+            if (!('Notification' in window)) {
+                state.textContent = 'This browser does not support desktop notifications.';
+                button.disabled = true;
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                state.textContent = 'Desktop pop-ups are allowed in this browser.';
+                button.disabled = true;
+            } else if (Notification.permission === 'denied') {
+                state.textContent = 'This browser is blocking pop-ups. Allow notifications for this '
+                    + 'site in the browser settings to turn them back on.';
+                button.disabled = true;
+            } else {
+                state.textContent = 'Desktop pop-ups are not enabled in this browser yet.';
+                button.disabled = false;
+            }
+        }
+
+        button.addEventListener('click', function () {
+            Notification.requestPermission().then(function (permission) {
+                render();
+                if (permission === 'granted') {
+                    new Notification('Hi-Tech Eggplant', {
+                        body: 'Desktop notifications are on. Alerts will appear here.',
+                    });
+                }
+            });
+        });
+
+        render();
+    })();
+</script>
+{% endblock %}

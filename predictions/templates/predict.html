@@ -1,0 +1,1193 @@
+{% extends 'base.html' %}
+
+{% block title %}Disease Detection - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .predict-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .predict-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+    }
+
+    .predict-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .predict-header h2 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .predict-header h2 i {
+        color: var(--brand);
+        margin-right: 10px;
+    }
+
+    .predict-header p {
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+    }
+
+    .predict-tabs {
+        margin-bottom: 2rem;
+        border: none;
+        background: var(--surface-alt);
+        border-radius: var(--radius-md);
+        padding: 6px;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 10px 22px;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: var(--text);
+        background: var(--surface);
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--brand);
+        color: #fff;
+    }
+
+    .predict-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        margin-bottom: 20px;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .predict-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 12px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    .prediction-result {
+        margin-top: 2rem;
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+    }
+
+    .prediction-result h3 {
+        margin: 0 0 18px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.4rem;
+    }
+
+    .prediction-result h3 i {
+        color: var(--accent);
+        margin-right: 8px;
+    }
+
+    .prediction-result img {
+        max-width: 100%;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border);
+    }
+
+    .prediction-result p {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .prediction-result p:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-label i {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        background: var(--surface);
+    }
+
+    .form-control:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px var(--brand-soft);
+        background: var(--surface);
+    }
+
+    .form-control::file-selector-button {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 8px 16px;
+        margin-right: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .form-control::file-selector-button:hover {
+        background: var(--brand-dark);
+    }
+
+    @media (max-width: 768px) {
+        .predict-wrap {
+            padding: 16px;
+        }
+
+        .predict-panel {
+            padding: 24px;
+        }
+
+        .predict-card {
+            padding: 22px;
+        }
+
+        .prediction-result {
+            padding: 22px;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+    }
+
+    .predict-mode-toggle {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .predict-mode-btn {
+        min-width: 220px;
+    }
+
+    .predict-mode-section {
+        display: none;
+    }
+
+    .predict-mode-section.active {
+        display: block;
+    }
+
+    /* ---- Live Scan (DJI Neo -> MediaMTX -> HLS) ---- */
+    .live-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        padding: 26px;
+    }
+
+    .live-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .live-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .live-title i {
+        color: var(--brand);
+        margin-right: 8px;
+    }
+
+    .live-sub {
+        margin: 4px 0 0;
+        font-size: 0.86rem;
+        color: var(--text-muted);
+    }
+
+    .conn-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .conn-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
+    }
+
+    .conn-idle {
+        background: var(--surface-alt);
+        color: var(--text-muted);
+        border-color: var(--border);
+    }
+
+    .conn-waiting {
+        background: rgba(245, 158, 11, 0.12);
+        color: #b45309;
+        border-color: rgba(245, 158, 11, 0.32);
+    }
+
+    .conn-error {
+        background: var(--danger-soft);
+        color: #b42318;
+        border-color: rgba(229, 72, 77, 0.3);
+    }
+
+    .conn-live {
+        background: rgba(229, 72, 77, 0.12);
+        color: #c62828;
+        border-color: rgba(229, 72, 77, 0.35);
+    }
+
+    .conn-live .conn-dot {
+        animation: conn-pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes conn-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+    }
+
+    .live-stage {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #0d0e14;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+
+    .live-stage video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        background: #0d0e14;
+    }
+
+    .stage-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        text-align: center;
+        padding: 20px;
+        color: rgba(255, 255, 255, 0.85);
+        background: #0d0e14;
+    }
+
+    .stage-overlay[hidden] {
+        display: none;
+    }
+
+    .stage-overlay i {
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.35);
+    }
+
+    .stage-overlay p {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 600;
+    }
+
+    .overlay-hint {
+        font-size: 0.83rem;
+        color: rgba(255, 255, 255, 0.5);
+        max-width: 34ch;
+    }
+
+    .live-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .btn-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        padding: 0.65rem 1.15rem;
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-live:disabled {
+        opacity: 0.55;
+        cursor: default;
+    }
+
+    .btn-live-primary {
+        background: var(--brand);
+        color: #fff;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-live-primary:hover:not(:disabled) {
+        background: var(--brand-dark);
+    }
+
+    .btn-live-ghost {
+        background: var(--surface);
+        color: var(--brand-dark);
+        border-color: rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-live-ghost:hover:not(:disabled) {
+        background: var(--brand-soft);
+    }
+
+    .btn-live-danger {
+        background: var(--surface);
+        color: #b42318;
+        border-color: rgba(229, 72, 77, 0.35);
+    }
+
+    .btn-live-danger:hover:not(:disabled) {
+        background: var(--danger-soft);
+    }
+
+    .cred-panel {
+        margin-top: 18px;
+        padding: 16px;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    .cred-panel[hidden] {
+        display: none;
+    }
+
+    .cred-note {
+        margin: 0 0 12px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .cred-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .cred-row:first-of-type {
+        border-top: none;
+    }
+
+    .cred-row-primary {
+        background: var(--surface);
+        border: 1px solid rgba(124, 58, 237, 0.35);
+        border-radius: var(--radius-sm);
+        padding: 10px 12px;
+    }
+
+    .cred-row-primary .cred-value {
+        font-size: 0.92rem;
+        font-weight: 600;
+    }
+
+    .cred-copy-primary {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #fff;
+    }
+
+    .cred-copy-primary:hover {
+        background: var(--brand-dark);
+        border-color: var(--brand-dark);
+        color: #fff;
+    }
+
+    .cred-warn {
+        display: flex;
+        gap: 0.5rem;
+        margin: 10px 0 0;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        color: #92400e;
+    }
+
+    .cred-warn i {
+        margin-top: 0.15rem;
+        flex-shrink: 0;
+    }
+
+    .cred-warn code {
+        background: rgba(146, 64, 14, 0.12);
+        padding: 0 0.25rem;
+        border-radius: 3px;
+        color: inherit;
+    }
+
+    .cred-split {
+        margin-top: 12px;
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
+    }
+
+    .cred-split summary {
+        cursor: pointer;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+    }
+
+    .cred-split summary:hover {
+        color: var(--brand);
+    }
+
+    .cred-label {
+        flex: 0 0 92px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .cred-value {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 0.85rem;
+        color: var(--text);
+        overflow-x: auto;
+        white-space: nowrap;
+        background: none;
+        padding: 0;
+    }
+
+    .cred-copy {
+        flex-shrink: 0;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-muted);
+        border-radius: var(--radius-sm);
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+    }
+
+    .cred-copy:hover {
+        color: var(--brand);
+        border-color: rgba(124, 58, 237, 0.35);
+    }
+
+    .live-message {
+        margin: 14px 0 0;
+        min-height: 1.2em;
+        font-size: 0.86rem;
+        color: var(--text-muted);
+    }
+
+    .btn-live-capture {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: var(--shadow-sm);
+        margin-left: auto;
+    }
+
+    .btn-live-capture:hover:not(:disabled) {
+        background: #0f8a5f;
+    }
+
+    .capture-result {
+        display: flex;
+        gap: 16px;
+        margin-top: 18px;
+        padding: 16px;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    .capture-result[hidden] {
+        display: none;
+    }
+
+    .capture-shot {
+        flex: 0 0 180px;
+    }
+
+    .capture-shot img {
+        width: 100%;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        display: block;
+    }
+
+    .capture-info {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .capture-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .capture-verdict {
+        flex: 1 1 auto;
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .capture-verdict.is-healthy {
+        color: #0f8a5f;
+    }
+
+    .capture-verdict.is-diseased {
+        color: #b42318;
+    }
+
+    .capture-dismiss {
+        flex-shrink: 0;
+        border: none;
+        background: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.95rem;
+        line-height: 1;
+        padding: 2px 4px;
+    }
+
+    .capture-dismiss:hover {
+        color: var(--text);
+    }
+
+    .capture-confidence,
+    .capture-about,
+    .capture-reco,
+    .capture-time {
+        margin: 0 0 6px;
+        font-size: 0.86rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .capture-reco {
+        color: var(--text);
+    }
+
+    .capture-time {
+        margin-bottom: 0;
+        font-size: 0.78rem;
+    }
+
+    @media (max-width: 576px) {
+        .capture-result {
+            flex-direction: column;
+        }
+
+        .capture-shot {
+            flex-basis: auto;
+        }
+
+        .btn-live-capture {
+            margin-left: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .live-card-head {
+            flex-direction: column;
+        }
+
+        .btn-live {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+        .cred-label {
+            flex-basis: 74px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="predict-wrap fade-in">
+    <section class="predict-panel">
+        <div class="predict-header">
+            <h2><i class="fas fa-leaf"></i> Eggplant Disease Detection</h2>
+            <p></p>
+        </div>
+
+        <div class="predict-mode-toggle">
+            <button type="button" id="mode-upload-btn" class="btn btn-custom predict-mode-btn">
+                <i class="fas fa-upload me-2"></i>Upload Eggplant Image
+            </button>
+            <button type="button" id="mode-live-btn" class="btn btn-brand-outline predict-mode-btn">
+                <i class="fas fa-video me-2"></i>Live Scan
+            </button>
+        </div>
+
+        <div id="mode-upload-section" class="predict-mode-section active">
+        <form action="{% url 'predict' %}" method="POST" enctype="multipart/form-data" class="predict-card">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="image" class="form-label">
+                    <i class="fas fa-image"></i>Select Eggplant Image
+                </label>
+                <input type="file" class="form-control" id="image" name="image" required accept="image/*">
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-info-circle me-1"></i>Upload a clear image of your eggplant leaf for accurate disease detection
+                </small>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-custom">
+                    <i class="fas fa-brain me-2"></i>Analyze Disease
+                </button>
+            </div>
+        </form>
+
+        {% if uploaded_file_url %}
+            <div class="prediction-result">
+                <h3 class="mb-4 text-center">
+                    <i class="fas fa-chart-line"></i> Analysis Results
+                </h3>
+                <div class="row align-items-center">
+                    <div class="col-lg-5 mb-4 mb-lg-0">
+                        <img src="{{ uploaded_file_url }}" alt="Uploaded Image" class="img-fluid rounded-4" style="max-width: 100%; height: auto; border: 1px solid var(--border);">
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="result-details">
+                            <div class="result-item mb-4">
+                                <p class="mb-2"><strong>Predicted Class:</strong></p>
+                                <span class="badge" style="font-size: 1rem; padding: 8px 16px; background: var(--brand-soft); color: var(--brand-dark);">{{ predicted_class }}</span>
+                            </div>
+                            <div class="result-item mb-4">
+                                <p class="mb-2"><strong>Confidence:</strong></p>
+                                <span class="badge" style="font-size: 1rem; padding: 8px 16px; background: var(--brand-soft); color: var(--brand-dark);">{{ confidence }}%</span>
+                            </div>
+                            <div class="result-item">
+                                <p class="mb-2"><strong>Recommendation:</strong></p>
+                                <div class="mt-2">
+                                    {% if predicted_class == "Healthy Eggplant Leaf" %}
+                                        <span style="font-size: 1rem; line-height: 1.6; color: var(--text);">
+                                            <i class="fas fa-check-circle me-2" style="color: var(--accent);"></i>No action needed. Your plant is healthy!
+                                        </span>
+                                    {% else %}
+                                        <span style="font-size: 1rem; line-height: 1.6; color: var(--text);">
+                                            <i class="fas fa-exclamation-triangle me-2" style="color: var(--danger);"></i>Disease detected. Consider immediate treatment or plant removal.
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        </div>
+
+        <div id="mode-live-section" class="predict-mode-section">
+        <!-- DJI Neo -> RC-N3 -> DJI Fly -> RTMP -> MediaMTX -> HLS -> this page. -->
+        <div class="live-card">
+            <div class="live-card-head">
+                <div>
+                    <h3 class="live-title"><i class="fas fa-helicopter"></i> Drone Camera View</h3>
+                    <p class="live-sub">DJI Neo live feed via RTMP</p>
+                </div>
+                <span id="conn_status" class="conn-pill conn-idle">
+                    <span class="conn-dot"></span><span id="conn_label">Checking...</span>
+                </span>
+            </div>
+
+            <div class="live-stage">
+                <video id="droneVideo" playsinline autoplay muted></video>
+                <div id="stage_overlay" class="stage-overlay">
+                    <i class="fas fa-satellite-dish"></i>
+                    <p id="overlay_text">Waiting for drone...</p>
+                    <span id="overlay_hint" class="overlay-hint"></span>
+                </div>
+            </div>
+
+            <div class="live-actions">
+                <button type="button" id="create_credentials" class="btn-live btn-live-ghost">
+                    <i class="fas fa-key"></i> Create Credentials
+                </button>
+                <button type="button" id="start_scan" class="btn-live btn-live-primary">
+                    <i class="fas fa-play"></i> Start Scan
+                </button>
+                <button type="button" id="stop_scan" class="btn-live btn-live-danger">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <!-- Enabled only while MediaMTX confirms a publisher: there is no frame to grab
+                     from a <video> that has no source attached. -->
+                <button type="button" id="capture_frame" class="btn-live btn-live-capture" disabled>
+                    <i class="fas fa-camera"></i> Capture &amp; Detect
+                </button>
+            </div>
+
+            <div id="credential_panel" class="cred-panel" hidden>
+                <p class="cred-note">
+                    <i class="fas fa-mobile-screen"></i>
+                    Paste this one address into <strong>DJI Fly &rarr; Transmission &rarr; Live Streaming &rarr; RTMP</strong>.
+                </p>
+                <div class="cred-row cred-row-primary">
+                    <code id="cred_publish" class="cred-value"></code>
+                    <button type="button" class="cred-copy cred-copy-primary" data-copy="cred_publish" title="Copy address">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <p class="cred-warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    Paste the whole address exactly. DJI Fly has one box, not two &mdash; entering the server
+                    and key separately joins them without the <code>/</code> and the drone will be rejected.
+                </p>
+
+                <details class="cred-split">
+                    <summary>Using OBS or another app with separate fields?</summary>
+                    <div class="cred-row">
+                        <span class="cred-label">Server</span>
+                        <code id="cred_rtmp" class="cred-value"></code>
+                        <button type="button" class="cred-copy" data-copy="cred_rtmp" title="Copy"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <div class="cred-row">
+                        <span class="cred-label">Stream Key</span>
+                        <code id="cred_key" class="cred-value"></code>
+                        <button type="button" class="cred-copy" data-copy="cred_key" title="Copy"><i class="fas fa-copy"></i></button>
+                    </div>
+                </details>
+            </div>
+
+            <div id="capture_result" class="capture-result" hidden>
+                <div class="capture-shot">
+                    <img id="capture_image" alt="Captured frame" />
+                </div>
+                <div class="capture-info">
+                    <div class="capture-head">
+                        <span id="capture_verdict" class="capture-verdict"></span>
+                        <button type="button" id="capture_dismiss" class="capture-dismiss" title="Dismiss">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+                    <p class="capture-confidence">Confidence <strong id="capture_confidence"></strong></p>
+                    <p id="capture_about" class="capture-about"></p>
+                    <p id="capture_reco" class="capture-reco"></p>
+                    <p id="capture_time" class="capture-time"></p>
+                </div>
+            </div>
+
+            <p id="live_message" class="live-message"></p>
+            {% csrf_token %}
+        </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <script>
+        (function () {
+            const $ = (id) => document.getElementById(id);
+
+            function getCookie(name) {
+                if (!document.cookie) return null;
+                for (const raw of document.cookie.split(';')) {
+                    const cookie = raw.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        return decodeURIComponent(cookie.slice(name.length + 1));
+                    }
+                }
+                return null;
+            }
+
+            // Cookie first; fall back to the hidden input when the token rotated or cookies are off.
+            function csrfToken() {
+                const fromCookie = getCookie('csrftoken');
+                if (fromCookie) return fromCookie;
+                const input = document.querySelector('#mode-live-section input[name="csrfmiddlewaretoken"]');
+                return input ? input.value : '';
+            }
+
+            async function postJSON(url) {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() }
+                });
+                const data = await res.json().catch(() => null);
+                return { ok: res.ok, data };
+            }
+
+            // ---- Player -------------------------------------------------------------
+            // `attached` tracks whether hls.js currently owns the <video>. Without it a fatal
+            // error (the playlist 404s for a moment as the drone connects) would tear the player
+            // down and never rebuild it, because the old code only re-attached on a
+            // not-live -> live transition that had already happened.
+            let hls = null;
+            let attached = false;
+            let attachedUrl = null;
+
+            function attachVideo(url) {
+                const video = $('droneVideo');
+                if (!video || !url) return;
+                if (attached && attachedUrl === url) return;
+
+                detachVideo();
+                attachedUrl = url;
+
+                if (window.Hls && window.Hls.isSupported()) {
+                    hls = new window.Hls({ lowLatencyMode: true, liveSyncDurationCount: 3 });
+                    hls.on(window.Hls.Events.ERROR, function (event, data) {
+                        if (!data || !data.fatal) return;
+                        // Drop the instance; the next poll rebuilds it once MediaMTX is serving.
+                        detachVideo();
+                    });
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+                    attached = true;
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Without this the frame grab taints the canvas: the playlist comes from
+                    // MediaMTX on :8888, a different origin from this page on :8000.
+                    video.crossOrigin = 'anonymous';
+                    video.src = url;
+                    attached = true;
+                }
+            }
+
+            function detachVideo() {
+                const video = $('droneVideo');
+                if (hls) { hls.destroy(); hls = null; }
+                if (video) { video.removeAttribute('src'); video.load(); }
+                attached = false;
+                attachedUrl = null;
+                setCaptureEnabled(false);
+            }
+
+            // ---- Status -------------------------------------------------------------
+            const STATES = {
+                no_credentials: { cls: 'conn-idle',    label: 'Not configured', overlay: 'No credentials yet',       hint: 'Press Create Credentials to get an RTMP address.' },
+                server_offline: { cls: 'conn-error',   label: 'Server offline', overlay: 'Streaming server offline', hint: 'MediaMTX is not reachable on this network.' },
+                stopped:        { cls: 'conn-idle',    label: 'Stopped',        overlay: 'Scan stopped',             hint: 'Press Start Scan to allow the drone to publish.' },
+                waiting:        { cls: 'conn-waiting', label: 'Waiting',        overlay: 'Waiting for drone...',     hint: 'Start the RTMP broadcast in DJI Fly.' },
+                live:           { cls: 'conn-live',    label: 'LIVE',           overlay: '',                         hint: '' }
+            };
+
+            function render(state, message) {
+                const view = STATES[state] || STATES.waiting;
+                const pill = $('conn_status');
+                pill.className = 'conn-pill ' + view.cls;
+                $('conn_label').textContent = view.label;
+
+                const overlay = $('stage_overlay');
+                if (state === 'live') {
+                    overlay.hidden = true;
+                } else {
+                    overlay.hidden = false;
+                    $('overlay_text').textContent = view.overlay;
+                    $('overlay_hint').textContent = view.hint;
+                }
+                if (message !== undefined) $('live_message').textContent = message || '';
+            }
+
+            async function pollStatus() {
+                try {
+                    const res = await fetch("{% url 'live_stream_status' %}", { credentials: 'same-origin' });
+                    const data = await res.json().catch(() => null);
+                    if (!res.ok || !data || !data.ok) {
+                        render('server_offline');
+                        detachVideo();
+                        return;
+                    }
+
+                    // LIVE renders only when the server says MediaMTX confirmed a publisher.
+                    if (data.state === 'live' && data.hls_url) {
+                        render('live');
+                        attachVideo(data.hls_url);
+                    } else {
+                        render(data.state);
+                        if (attached) detachVideo();
+                    }
+                    setCaptureEnabled(data.state === 'live');
+                } catch (err) {
+                    console.error('Live status poll failed', err);
+                    render('server_offline');
+                    setCaptureEnabled(false);
+                }
+            }
+
+            // ---- Capture ------------------------------------------------------------
+            function setCaptureEnabled(enabled) {
+                const btn = $('capture_frame');
+                if (btn && !btn.dataset.busy) btn.disabled = !enabled;
+            }
+
+            // Grab the frame the viewer is looking at. hls.js feeds the <video> through MSE from
+            // a same-origin blob, so the canvas is not tainted by MediaMTX being on another port
+            // and toBlob works; the native-HLS fallback sets crossOrigin for the same reason.
+            function grabFrame() {
+                const video = $('droneVideo');
+                if (!video || !video.videoWidth || !video.videoHeight) return null;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                return canvas;
+            }
+
+            $('capture_frame').addEventListener('click', function () {
+                const btn = this;
+                const canvas = grabFrame();
+                if (!canvas) {
+                    $('live_message').textContent = 'No video frame available yet - wait for the feed to start.';
+                    return;
+                }
+
+                btn.dataset.busy = '1';
+                btn.disabled = true;
+                $('live_message').textContent = 'Analyzing captured frame...';
+
+                canvas.toBlob(async function (blob) {
+                    if (!blob) {
+                        $('live_message').textContent = 'Could not read the video frame.';
+                        delete btn.dataset.busy;
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    const form = new FormData();
+                    form.append('frame', blob, 'live_frame.jpg');
+
+                    try {
+                        const res = await fetch("{% url 'capture_live_frame' %}", {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: { 'X-CSRFToken': csrfToken() },
+                            body: form
+                        });
+                        const data = await res.json().catch(() => null);
+                        if (!res.ok || !data || !data.ok) {
+                            $('live_message').textContent = (data && data.error) || 'Analysis failed.';
+                            return;
+                        }
+                        showCaptureResult(data);
+                        $('live_message').textContent = '';
+                    } catch (err) {
+                        console.error('Capture failed', err);
+                        $('live_message').textContent = 'Could not reach the server to analyze the frame.';
+                    } finally {
+                        delete btn.dataset.busy;
+                        btn.disabled = false;
+                    }
+                }, 'image/jpeg', 0.92);
+            });
+
+            function showCaptureResult(data) {
+                $('capture_image').src = data.image_url;
+                const verdict = $('capture_verdict');
+                verdict.textContent = data.predicted_class;
+                verdict.className = 'capture-verdict ' + (data.healthy ? 'is-healthy' : 'is-diseased');
+                $('capture_confidence').textContent = data.confidence + '%';
+                $('capture_about').textContent = data.about || '';
+                $('capture_about').hidden = !data.about;
+                $('capture_reco').textContent = data.recommendation || '';
+                $('capture_time').textContent = 'Captured ' + (data.captured_at || '');
+                $('capture_result').hidden = false;
+            }
+
+            $('capture_dismiss').addEventListener('click', function () {
+                $('capture_result').hidden = true;
+            });
+
+            // ---- Controls -----------------------------------------------------------
+            $('create_credentials').addEventListener('click', async function () {
+                this.disabled = true;
+                $('live_message').textContent = 'Creating credentials...';
+                try {
+                    const { ok, data } = await postJSON("{% url 'create_rtmp_stream' %}");
+                    if (!ok || !data || !data.ok) {
+                        $('live_message').textContent = 'Could not create credentials: ' + ((data && data.error) || 'unknown error');
+                        return;
+                    }
+                    $('cred_rtmp').textContent = data.rtmp_base || '';
+                    $('cred_key').textContent = data.stream_key || '';
+                    $('cred_publish').textContent = data.publish_url || '';
+                    $('credential_panel').hidden = false;
+                    $('live_message').textContent = 'New key generated. Any previous key is now invalid.';
+                    // A regenerated key invalidates the old session, so drop the player and re-check.
+                    detachVideo();
+                    pollStatus();
+                } finally {
+                    this.disabled = false;
+                }
+            });
+
+            $('start_scan').addEventListener('click', async function () {
+                this.disabled = true;
+                $('live_message').textContent = 'Arming stream...';
+                try {
+                    const { ok, data } = await postJSON("{% url 'start_drone_scan' %}");
+                    if (!ok || !data || !data.ok) {
+                        $('live_message').textContent = (data && data.error) || 'Could not start the scan.';
+                        return;
+                    }
+                    $('live_message').textContent = data.message || '';
+                    pollStatus();
+                } finally {
+                    this.disabled = false;
+                }
+            });
+
+            $('stop_scan').addEventListener('click', async function () {
+                this.disabled = true;
+                $('live_message').textContent = 'Stopping...';
+                try {
+                    const { ok, data } = await postJSON("{% url 'stop_drone_scan' %}");
+                    detachVideo();
+                    if (!ok || !data || !data.ok) {
+                        $('live_message').textContent = (data && data.error) || 'Could not stop the scan.';
+                        return;
+                    }
+                    $('live_message').textContent = data.disconnected
+                        ? 'Scan stopped and the drone was disconnected.'
+                        : (data.message || 'Scan stopped.');
+                    pollStatus();
+                } finally {
+                    this.disabled = false;
+                }
+            });
+
+            document.querySelectorAll('.cred-copy').forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    const target = $(btn.dataset.copy);
+                    const text = target ? target.textContent : '';
+                    if (!text) return;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                    } catch (e) {
+                        // clipboard API needs a secure context; plain http LAN access falls back.
+                        const tmp = document.createElement('textarea');
+                        tmp.value = text;
+                        document.body.appendChild(tmp);
+                        tmp.select();
+                        try { document.execCommand('copy'); } catch (e2) {}
+                        document.body.removeChild(tmp);
+                    }
+                    const icon = btn.querySelector('i');
+                    icon.className = 'fas fa-check';
+                    setTimeout(function () { icon.className = 'fas fa-copy'; }, 1200);
+                });
+            });
+
+            // ---- Mode toggle --------------------------------------------------------
+            const modeUploadBtn = $('mode-upload-btn');
+            const modeLiveBtn = $('mode-live-btn');
+            const modeUploadSection = $('mode-upload-section');
+            const modeLiveSection = $('mode-live-section');
+            let pollHandle = null;
+
+            function showMode(mode) {
+                const showUpload = mode === 'upload';
+                modeUploadSection.classList.toggle('active', showUpload);
+                modeLiveSection.classList.toggle('active', !showUpload);
+                modeUploadBtn.classList.toggle('btn-custom', showUpload);
+                modeUploadBtn.classList.toggle('btn-brand-outline', !showUpload);
+                modeLiveBtn.classList.toggle('btn-custom', !showUpload);
+                modeLiveBtn.classList.toggle('btn-brand-outline', showUpload);
+
+                // Poll only while the Live Scan panel is visible; every poll hits MediaMTX.
+                if (showUpload) {
+                    if (pollHandle) { clearInterval(pollHandle); pollHandle = null; }
+                    detachVideo();
+                } else if (!pollHandle) {
+                    pollStatus();
+                    pollHandle = setInterval(pollStatus, 4000);
+                }
+            }
+
+            modeUploadBtn.addEventListener('click', function () { showMode('upload'); });
+            modeLiveBtn.addEventListener('click', function () { showMode('live'); });
+        })();
+        </script>
+    </section>
+</div>
+{% endblock %}

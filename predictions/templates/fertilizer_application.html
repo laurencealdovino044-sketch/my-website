@@ -1,0 +1,790 @@
+{% extends 'base.html' %}
+
+{% block title %}Fertilizer & Chemical Application - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .fert-wrap {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    :root {
+        --fert: #b8720c;
+        --fert-soft: rgba(184, 114, 12, 0.08);
+    }
+
+    .page-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+    }
+
+    .panel-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .panel-header h2 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .panel-header h2 i {
+        color: var(--fert);
+        margin-right: 10px;
+    }
+
+    .panel-header p {
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+    }
+
+    .feature-card {
+        height: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .feature-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+        display: grid;
+        place-items: center;
+        background: var(--fert-soft);
+        color: var(--fert);
+        margin: 0 auto 18px;
+        font-size: 1.3rem;
+    }
+
+    .feature-card h4 {
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 1.15rem;
+        text-align: center;
+    }
+
+    .feature-card p {
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+    .nav-tabs {
+        border: none;
+        background: var(--surface-alt);
+        border-radius: var(--radius-md);
+        padding: 6px;
+        margin-bottom: 28px;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 12px 24px;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: var(--text);
+        background: var(--surface);
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--fert);
+        color: #fff;
+    }
+
+    .surface {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        border: 1px solid var(--border);
+    }
+
+    .recommendation-card {
+        background: var(--fert-soft);
+        color: var(--text);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        border: 1px solid rgba(184, 114, 12, 0.18);
+    }
+
+    .recommendation-card h4 {
+        margin: 0 0 18px;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--text);
+    }
+
+    .recommendation-card h4 i {
+        color: var(--fert);
+        margin-right: 8px;
+    }
+
+    .recommendation-card .text-dim {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .reco-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .reco-item {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(184, 114, 12, 0.12);
+    }
+
+    .reco-item:last-child {
+        border-bottom: 0;
+    }
+
+    /* The product type carries the answer to "what do I actually buy", so it reads as a label
+       rather than as part of the sentence. */
+    .reco-type {
+        flex: 0 0 auto;
+        min-width: 150px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--fert);
+        background: rgba(184, 114, 12, 0.1);
+        border: 1px solid rgba(184, 114, 12, 0.22);
+        border-radius: 999px;
+        padding: 3px 10px;
+        text-align: center;
+    }
+
+    .reco-text {
+        flex: 1 1 220px;
+        color: var(--text);
+    }
+
+    .reco-schedule {
+        border-top: 1px solid rgba(184, 114, 12, 0.18);
+        padding-top: 16px;
+    }
+
+    @media (max-width: 575.98px) {
+        .reco-type {
+            min-width: 0;
+        }
+    }
+
+    .side-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .side-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .side-card .card-header {
+        background: var(--surface-alt);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 22px;
+    }
+
+    .side-card .card-header h4 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--text);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .side-card .card-header h4 i {
+        color: var(--fert);
+        font-size: 1.1rem;
+    }
+
+    .side-card .card-body {
+        padding: 22px;
+    }
+
+    .list-group-item {
+        border-color: var(--border);
+        padding: 12px 16px;
+        background: var(--surface-alt);
+        border: none;
+        border-radius: var(--radius-sm);
+        margin-bottom: 8px;
+    }
+
+    .kpi-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        border-radius: 999px;
+        background: var(--fert-soft);
+        border: 1px solid rgba(184, 114, 12, 0.2);
+        font-weight: 600;
+        color: var(--fert);
+        font-size: 0.9rem;
+    }
+
+    .btn-brand {
+        background: var(--fert);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 12px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-brand:hover {
+        color: #fff;
+        background: #94590a;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-brand-outline {
+        background: transparent;
+        color: var(--fert);
+        border: 1.5px solid rgba(184, 114, 12, 0.4);
+        border-radius: var(--radius-md);
+        padding: 11px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: background-color 0.15s ease;
+    }
+
+    .btn-brand-outline:hover {
+        background: var(--fert-soft);
+        color: var(--fert);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-label i {
+        color: var(--fert);
+        font-size: 0.9rem;
+    }
+
+    .form-select, .form-control {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        background: var(--surface);
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--fert);
+        box-shadow: 0 0 0 3px var(--fert-soft);
+        background: var(--surface);
+    }
+
+    .alert {
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        padding: 14px 18px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .fert-wrap {
+            padding: 16px;
+        }
+
+        .page-panel {
+            padding: 24px;
+        }
+
+        .feature-card {
+            padding: 22px;
+        }
+
+        .surface {
+            padding: 22px;
+        }
+
+        .recommendation-card {
+            padding: 22px;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+
+        .side-card .card-body {
+            padding: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fert-wrap fade-in">
+  <section class="page-panel">
+    <div class="panel-header">
+      <h2><i class="fas fa-flask"></i> Fertilizer & Chemical Application</h2>
+      <p>Smart nutrient management and chemical treatment scheduling for optimal eggplant health and yield.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-seedling"></i></div>
+          <h4>Growth Stage Analysis</h4>
+          <p>AI-powered recommendations based on plant age and developmental stage for better yield and plant health.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-magnifying-glass"></i></div>
+          <h4>Deficiency Detection</h4>
+          <p>Identify and treat nutrient deficiencies (N, P, K, magnesium, iron) with targeted guidance and treatment plans.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+          <h4>Safe Chemical Management</h4>
+          <p>Schedule chemical applications with safer handling recommendations and optimal timing for pest control.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <ul class="nav nav-tabs justify-content-center" id="applicationTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab != 'chemical' %}active{% endif %}" id="fertilizer-tab" data-bs-toggle="tab" data-bs-target="#fertilizer" type="button" role="tab" aria-controls="fertilizer" aria-selected="{% if active_tab != 'chemical' %}true{% else %}false{% endif %}">
+              <i class="fas fa-leaf me-2"></i> Fertilizer Application
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if active_tab == 'chemical' %}active{% endif %}" id="chemical-tab" data-bs-toggle="tab" data-bs-target="#chemical" type="button" role="tab" aria-controls="chemical" aria-selected="{% if active_tab == 'chemical' %}true{% else %}false{% endif %}">
+              <i class="fas fa-spray-can me-2"></i> Chemical Application
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content surface" id="applicationTabsContent">
+          <div class="tab-pane fade {% if active_tab != 'chemical' %}show active{% endif %}" id="fertilizer" role="tabpanel" aria-labelledby="fertilizer-tab">
+            <form method="post" id="fertilizerForm">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="apply_fertilizer">
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="plant_age" class="form-label">
+                    <i class="fas fa-calendar"></i>Plant Age (weeks)
+                  </label>
+                  <select class="form-select" id="plant_age" name="plant_age" required>
+                    <option value="">Select plant age</option>
+                    {% for value, label in plant_age_options %}
+                      <option value="{{ value }}" {% if value == plant_age_default %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if plant_age_weeks %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-seedling me-1"></i>From the growth tracker: day {{ season.current_day }} ({{ plant_age_weeks }} week{{ plant_age_weeks|pluralize }}), {{ season.phase }}.
+                    </div>
+                  {% else %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-circle-info me-1"></i>No active season — start one on the dashboard to fill this in automatically.
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label for="deficiency" class="form-label">
+                    <i class="fas fa-exclamation-triangle"></i>Nutrient Deficiency
+                  </label>
+                  <select class="form-select" id="deficiency" name="deficiency">
+                    <option value="auto" selected>Auto — from NPK sensor</option>
+                    <option value="none">No deficiency</option>
+                    <option value="nitrogen">Nitrogen deficiency</option>
+                    <option value="phosphorus">Phosphorus deficiency</option>
+                    <option value="potassium">Potassium deficiency</option>
+                    <option value="magnesium">Magnesium deficiency</option>
+                    <option value="iron">Iron deficiency</option>
+                  </select>
+                  <div id="deficiency-auto-hint" class="form-text mt-1">
+                    <i class="fas fa-satellite-dish me-1"></i>Reading the soil probe…
+                  </div>
+                </div>
+              </div>
+
+              {# Scheduling lives in the Recommendations card below, next to the plan it schedules. #}
+              <div class="d-flex gap-3 flex-wrap justify-content-center mt-4">
+                <button id="get-npk-reco" type="button" class="btn btn-brand">
+                  <i class="fas fa-vials me-2"></i> Get NPK Recommendation
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-pane fade {% if active_tab == 'chemical' %}show active{% endif %}" id="chemical" role="tabpanel" aria-labelledby="chemical-tab">
+            <form method="post" id="chemicalForm">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="apply_chemical">
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="plant_age_chemical" class="form-label">
+                    <i class="fas fa-calendar"></i>Plant Age (weeks)
+                  </label>
+                  <select class="form-select" id="plant_age_chemical" name="plant_age" required>
+                    <option value="">Select plant age</option>
+                    {% for value, label in plant_age_options %}
+                      <option value="{{ value }}" {% if value == plant_age_default %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                  {% if plant_age_weeks %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-seedling me-1"></i>From the growth tracker: day {{ season.current_day }} ({{ plant_age_weeks }} week{{ plant_age_weeks|pluralize }}), {{ season.phase }}.
+                    </div>
+                  {% else %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-circle-info me-1"></i>No active season — start one on the dashboard to fill this in automatically.
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label for="deficiency_chemical" class="form-label">
+                    <i class="fas fa-exclamation-triangle"></i>Issue/Symptom
+                  </label>
+                  <select class="form-select" id="deficiency_chemical" name="deficiency">
+                    <option value="none" {% if not detected_issue %}selected{% endif %}>General treatment</option>
+                    <optgroup label="Detected by the Predict tool">
+                      {% for name in disease_issue_options %}
+                        <option value="{{ name }}" {% if name == detected_issue %}selected{% endif %}>{{ name }}</option>
+                      {% endfor %}
+                    </optgroup>
+                    <optgroup label="Nutrient deficiency">
+                      <option value="nitrogen">Nitrogen deficiency</option>
+                      <option value="phosphorus">Phosphorus deficiency</option>
+                      <option value="potassium">Potassium deficiency</option>
+                      <option value="magnesium">Magnesium deficiency</option>
+                      <option value="iron">Iron deficiency</option>
+                    </optgroup>
+                  </select>
+                  {% if detected_issue %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-microscope me-1"></i>Latest analysis: {{ detected_issue }}{% if latest_detection.last_confidence %} ({{ latest_detection.last_confidence }}%){% endif %}.
+                    </div>
+                  {% else %}
+                    <div class="form-text mt-1">
+                      <i class="fas fa-microscope me-1"></i>No disease detected yet — scan a leaf on the Predict page to fill this in.
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              {# Scheduling lives in the Recommendations card below, next to the plan it schedules. #}
+              <div class="d-flex gap-3 flex-wrap justify-content-center mt-4">
+                <button type="submit" class="btn btn-brand">
+                  <i class="fas fa-spray-can me-2"></i> Get Chemical Recommendations
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="recommendation-card mt-4" id="recommendations">
+          <h4><i class="fas fa-lightbulb"></i> Recommendations</h4>
+          <div class="text-dim">
+            {% comment %}
+              Status lines (scheduled / generated / errors) read as a heading. The recommendation
+              itself comes from last_recommendation so each line can carry its product type and
+              the card can schedule this exact plan without going back to the form above.
+            {% endcomment %}
+            {% for message in messages %}
+              <div class="mb-2 fw-bold">{{ message }}</div>
+            {% endfor %}
+
+            {% if last_recommendation %}
+              <div class="mb-3 fw-bold">
+                {% if last_recommendation.kind == 'chemical' %}Recommended Chemical Application{% else %}Recommended Fertilizer{% endif %}
+                — {{ last_recommendation.issue_label }}, {{ last_recommendation.plant_age }} week{{ last_recommendation.plant_age|pluralize }}
+              </div>
+
+              <ul class="reco-list">
+                {% for item in last_recommendation.reco_items %}
+                  <li class="reco-item">
+                    {% if item.type %}<span class="reco-type">{{ item.type }}</span>{% endif %}
+                    <span class="reco-text">{{ item.text }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              <form method="post" class="reco-schedule mt-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="{{ last_recommendation.action }}">
+                <input type="hidden" name="plant_age" value="{{ last_recommendation.plant_age }}">
+                <input type="hidden" name="deficiency" value="{{ last_recommendation.issue }}">
+                <input type="hidden" name="schedule" value="1">
+                <input type="hidden" name="tab" value="{{ active_tab }}">
+                <label for="reco_due_date" class="form-label mb-1">
+                  <i class="fas fa-calendar-alt me-1"></i>Apply on
+                </label>
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                  <input type="date" class="form-control" style="max-width: 200px;"
+                         id="reco_due_date" name="{{ last_recommendation.date_field }}" min="{% now 'Y-m-d' %}" required>
+                  <button type="submit" class="btn btn-brand">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Set {% if last_recommendation.kind == 'chemical' %}Chemical{% else %}Fertilizer{% endif %} Schedule
+                  </button>
+                </div>
+              </form>
+            {% elif not messages %}
+              <div class="text-center">
+                <i class="fas fa-robot fa-2x mb-3 opacity-75"></i>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="side-card mb-4">
+          <div class="card-header">
+            <h4><i class="fas fa-vials"></i> NPK Status Summary</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Nitrogen (N):</strong>
+                <span id="n-summary" class="kpi-pill">—</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Phosphorus (P):</strong>
+                <span id="p-summary" class="kpi-pill">—</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Potassium (K):</strong>
+                <span id="k-summary" class="kpi-pill">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card mb-4">
+          <div class="card-header">
+            <h4><i class="fas fa-chart-line"></i> Live Sensor Readings</h4>
+          </div>
+          <div class="card-body">
+            <div id="sensor-data" class="row g-3">
+              <div class="col-6">
+                <div class="text-muted small mb-1">Temperature</div>
+                <div class="fw-bold"><span id="temp-data">—</span> °C</div>
+              </div>
+              <div class="col-6">
+                <div class="text-muted small mb-1">Humidity</div>
+                <div class="fw-bold"><span id="humidity-data">—</span> %</div>
+              </div>
+              <div class="col-6">
+                <div class="text-muted small mb-1">Soil Moisture</div>
+                <div class="fw-bold"><span id="soil-data">—</span></div>
+              </div>
+              <div class="col-6">
+                <div class="text-muted small mb-1">Nitrogen (N)</div>
+                <div class="fw-bold"><span id="n-data">—</span></div>
+              </div>
+              <div class="col-6">
+                <div class="text-muted small mb-1">Phosphorus (P)</div>
+                <div class="fw-bold"><span id="p-data">—</span></div>
+              </div>
+              <div class="col-6">
+                <div class="text-muted small mb-1">Potassium (K)</div>
+                <div class="fw-bold"><span id="k-data">—</span></div>
+              </div>
+            </div>
+            <div class="text-muted small mt-3 text-center">
+              <i class="fas fa-clock me-1"></i>Last updated: <span id="last-updated">never</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="card-header">
+            <h4><i class="fas fa-calendar-alt"></i> Scheduled Applications</h4>
+          </div>
+          <div class="card-body">
+            {% if scheduled_apps %}
+              <div class="mb-3">
+                {% for app in scheduled_apps %}
+                  <div class="alert alert-info mb-2">
+                    <div class="d-flex align-items-start gap-2">
+                      <i class="fas fa-calendar-check mt-1"></i>
+                      <div>
+                        <strong>{{ app.due_date|date:"M d, Y" }}</strong>
+                        <div class="small">{{ app.recommendations }}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% if scheduled_applications %}
+              <div class="fw-bold mb-3 text-primary">
+                <i class="fas fa-tasks me-2"></i>Pending Tasks
+              </div>
+              {% for application in scheduled_applications %}
+                <div class="alert alert-{% if application.due_date|date:'Y-m-d' == today %}danger{% elif application.due_date|date:'Y-m-d' <= tomorrow %}warning{% else %}info{% endif %} mb-2">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div class="flex-grow-1">
+                      <strong>{{ application.application_type|title }} Application</strong>
+                      <div class="small">Due: {{ application.due_date|date:"M d, Y" }}</div>
+                      <div class="small text-muted">{{ application.recommendations|truncatechars:60 }}</div>
+                    </div>
+                    <form method="post" class="ms-auto">
+                      {% csrf_token %}
+                      <input type="hidden" name="tab" value="{{ active_tab }}">
+                      <input type="hidden" name="application_id" value="{{ application.id }}">
+                      <button type="submit" name="action" value="complete_application" class="btn btn-sm btn-success" title="Mark as completed">
+                        <i class="fas fa-check"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center text-muted py-3">
+                <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                <p class="mb-0">No scheduled applications</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  function getNPKStatus(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return '—';
+    if (n < 50) return 'Low';
+    if (n > 150) return 'High';
+    return 'Adequate';
+  }
+
+  async function updateSensorData() {
+    try {
+      const res = await fetch("{% url 'get_sensor_data' %}");
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      const temp = data.temperature ?? data.temp;
+      const humidity = data.humidity;
+      const soil = data.soil_moisture;
+      const n = data.nitrogen ?? data.n_level ?? data.n;
+      const p = data.phosphorus ?? data.p_level ?? data.p;
+      const k = data.potassium ?? data.k_level ?? data.k;
+
+      document.getElementById('temp-data').textContent = (Number.isFinite(Number(temp)) ? Number(temp).toFixed(1) : (temp ?? '—'));
+      document.getElementById('humidity-data').textContent = (Number.isFinite(Number(humidity)) ? Number(humidity).toFixed(1) : (humidity ?? '—'));
+      document.getElementById('soil-data').textContent = (Number.isFinite(Number(soil)) ? Number(soil).toFixed(2) : (soil ?? '—'));
+
+      document.getElementById('n-data').textContent = (Number.isFinite(Number(n)) ? Number(n).toFixed(2) : (n ?? '—'));
+      document.getElementById('p-data').textContent = (Number.isFinite(Number(p)) ? Number(p).toFixed(2) : (p ?? '—'));
+      document.getElementById('k-data').textContent = (Number.isFinite(Number(k)) ? Number(k).toFixed(2) : (k ?? '—'));
+
+      document.getElementById('n-summary').textContent = getNPKStatus(n);
+      document.getElementById('p-summary').textContent = getNPKStatus(p);
+      document.getElementById('k-summary').textContent = getNPKStatus(k);
+      document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+      updateDeficiencyHint(n, p, k);
+    } catch (e) {
+      document.getElementById('last-updated').textContent = 'error';
+      updateDeficiencyHint(null, null, null);
+    }
+  }
+
+  // Shows what "Auto" would pick right now, so the reading behind the recommendation is
+  // visible before the form is submitted. The server re-reads the sensor and decides.
+  function updateDeficiencyHint(n, p, k) {
+    const hint = document.getElementById('deficiency-auto-hint');
+    if (!hint) return;
+
+    const low = [
+      ['Nitrogen', n], ['Phosphorus', p], ['Potassium', k]
+    ].filter(([, value]) => Number.isFinite(Number(value)) && Number(value) < 50)
+     .map(([label]) => label);
+
+    const anyReading = [n, p, k].some((value) => Number.isFinite(Number(value)));
+
+    if (!anyReading) {
+      hint.innerHTML = '<i class="fas fa-triangle-exclamation me-1"></i>No NPK reading from the Raspberry Pi yet.';
+    } else if (low.length) {
+      hint.innerHTML = '<i class="fas fa-satellite-dish me-1"></i>Sensor: low ' + low.join(', ') + '.';
+    } else {
+      hint.innerHTML = '<i class="fas fa-satellite-dish me-1"></i>Sensor: all nutrients adequate.';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const npkBtn = document.getElementById('get-npk-reco');
+    if (npkBtn) {
+      npkBtn.addEventListener('click', () => {
+        const form = document.getElementById('fertilizerForm') || document.querySelector('form');
+        if (!form) return;
+        const actionInput = form.querySelector('input[name="action"]');
+        if (actionInput) actionInput.value = 'get_npk_recommendation';
+        form.submit();
+      });
+    }
+
+    updateSensorData();
+    setInterval(updateSensorData, 5000);
+  });
+</script>
+{% endblock %}
+

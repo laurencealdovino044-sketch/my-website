@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            padding: 10px;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border-radius: 20px;
+            padding: 10px 20px;
+            width: 100%;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .img-fluid {
+            border-radius: 10px;
+            max-width: 50%;
+            height: auto;
+        }
+        .result-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2, h3 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+        h4, h5 {
+            font-size: 1.1rem;
+        }
+        .disease-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card result-section">
+            <h2 class="text-center mb-4">Prediction Result</h2>
+            <div class="text-center mb-3">
+                <h3>Uploaded Image</h3>
+                <img src="{{ uploaded_file_url }}" alt="Uploaded Image" class="img-fluid mb-4">
+            </div>
+
+            <div class="mb-4">
+                <h4><strong>Predicted Class:</strong> {{ predicted_class }}</h4>
+                <h5><strong>Confidence:</strong> {{ confidence }}%</h5>
+            </div>
+
+            <div class="disease-info">
+                {% if predicted_class == "Aphids" %}
+                <h5><strong>Information:</strong> Aphids are small sap-sucking insects that can damage eggplants by transmitting viruses and causing stunted growth. Treat with insecticidal soap or neem oil.</h5>
+                {% elif predicted_class == "Cercospora Leaf Spot" %}
+                <h5><strong>Information:</strong> Cercospora leaf spot is a fungal disease causing small circular spots on leaves. Use fungicides and ensure proper crop rotation to prevent infection.</h5>
+                {% elif predicted_class == "Defect Eggplant" %}
+                <h5><strong>Information:</strong> Defect eggplants may have physical or structural issues caused by pests, diseases, or poor growing conditions. Remove affected fruits and improve plant care.</h5>
+                {% elif predicted_class == "Flea Beetles" %}
+                <h5><strong>Information:</strong> Flea beetles chew small holes in leaves, reducing plant health. Use row covers or neem-based insecticides to control them.</h5>
+                {% elif predicted_class == "Healthy Eggplant Leaf" %}
+                <h5><strong>Information:</strong> Your eggplant leaf is healthy. Maintain proper watering, fertilization, and pest control practices to keep it this way.</h5>
+                {% elif predicted_class == "Insect Pest Disease" %}
+                <h5><strong>Information:</strong> This refers to damage caused by various insects. Use integrated pest management practices to minimize harm.</h5>
+                {% elif predicted_class == "Leaf Spot Disease" %}
+                <h5><strong>Information:</strong> Leaf spot disease causes dark lesions on leaves due to fungal infections. Apply fungicides and remove infected foliage.</h5>
+                {% elif predicted_class == "Mosaic Virus Disease" %}
+                <h5><strong>Information:</strong> Mosaic virus causes yellow or green mottling on leaves. Remove infected plants to prevent further spread.</h5>
+                {% elif predicted_class == "Phytophora Blight" %}
+                <h5><strong>Information:</strong> Phytophthora blight causes wilting and stem rot. Ensure proper drainage and use fungicides to manage the disease.</h5>
+                {% elif predicted_class == "Powdery Mildew" %}
+                <h5><strong>Information:</strong> Powdery mildew forms white powdery spots on leaves. Treat with sulfur-based fungicides or organic sprays.</h5>
+                {% elif predicted_class == "White Mold Disease" %}
+                <h5><strong>Information:</strong> White mold disease causes white fungal growth on stems and fruits. Remove affected parts and improve airflow around plants.</h5>
+                {% elif predicted_class == "Wilt Disease" %}
+                <h5><strong>Information:</strong> Wilt disease is caused by soil-borne pathogens, leading to plant wilting. Use resistant varieties and practice crop rotation.</h5>
+                {% else %}
+                <h5><strong>Information:</strong> No specific information is available for this prediction. Please consult an expert for further guidance.</h5>
+                {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'predict' %}" class="btn btn-custom">Upload Another Image</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

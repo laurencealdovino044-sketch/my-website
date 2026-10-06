@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}History - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .history-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .history-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+    }
+
+    .history-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .history-header h2 {
+        margin: 0 0 10px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .history-header h2 i {
+        color: var(--brand);
+        margin-right: 10px;
+    }
+
+    .history-header p {
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+    }
+
+    .history-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--brand);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        margin-bottom: 16px;
+        transition: box-shadow 0.15s ease;
+    }
+
+    .history-item:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .history-item h5 {
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: var(--text);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .history-item h5 i {
+        color: var(--brand);
+        font-size: 1rem;
+    }
+
+    .history-item p {
+        margin-bottom: 8px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-size: 0.98rem;
+    }
+
+    .timestamp {
+        color: #9aa0b4;
+        font-size: 0.88rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .timestamp i {
+        color: #c3c7d4;
+    }
+
+    .no-history {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 60px 20px;
+        background: var(--surface-alt);
+        border-radius: var(--radius-lg);
+        border: 1px dashed var(--border);
+    }
+
+    .no-history i {
+        color: #c3c7d4;
+        font-size: 2.75rem;
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .no-history p {
+        font-size: 1.05rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .history-wrap {
+            padding: 16px;
+        }
+
+        .history-panel {
+            padding: 24px;
+        }
+
+        .history-item {
+            padding: 18px;
+        }
+
+        .no-history {
+            padding: 40px 20px;
+        }
+
+        .no-history i {
+            font-size: 2.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-wrap fade-in">
+    <section class="history-panel">
+        <div class="history-header">
+            <h2><i class="fas fa-history"></i> Activity History</h2>
+            <p>Track all your farming activities, system logs, and automated operations in chronological order.</p>
+        </div>
+
+        {% if history %}
+            {% for item in history %}
+                <div class="history-item">
+                    <h5>
+                        {% if item.action|lower == "watering" %}
+                            <i class="fas fa-tint"></i>
+                        {% elif item.action|lower == "spraying" %}
+                            <i class="fas fa-spray-can"></i>
+                        {% elif item.action|lower == "prediction" %}
+                            <i class="fas fa-brain"></i>
+                        {% elif item.action|lower == "fertilizer" %}
+                            <i class="fas fa-flask"></i>
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
+                        {{ item.action|title }}
+                    </h5>
+                    <p>{{ item.details }}</p>
+                    <div class="timestamp">
+                        <i class="fas fa-clock"></i>
+                        {{ item.timestamp|date:"M d, Y \a\t H:i" }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-history">
+                <i class="fas fa-inbox"></i>
+                <p>No activity history available yet</p>
+                <small class="text-muted">Your farming activities will appear here once you start using the system</small>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

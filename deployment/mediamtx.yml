@@ -1,0 +1,44 @@
+# MediaMTX configuration for DJI RTMP ingest + HLS playback
+logLevel: info
+
+api: yes
+apiAddress: 0.0.0.0:9997
+
+authMethod: http
+authHTTPAddress: http://127.0.0.1:8000/api/mediamtx/auth/
+authHTTPExclude:
+  - action: api
+  - action: metrics
+  - action: pprof
+  # Playback is already open (MediaMTXAuthAPIView accepts every non-publish action), and with
+  # hlsAlwaysRemux each segment request would otherwise POST to Django once per second per
+  # viewer. Only publishing needs to be authenticated against the stream-key table.
+  - action: read
+  - action: playback
+
+rtmp: yes
+rtmpAddress: :1935
+
+hls: yes
+hlsAddress: :8888
+hlsAlwaysRemux: yes
+# Low-latency variant plus short segments: the dashboard wants the drone view as close to
+# real time as HLS allows, not a 15-second-behind broadcast feed.
+hlsVariant: lowLatency
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms
+hlsSegmentCount: 7
+# The page is served from Django on another origin (:8000) while HLS comes from :8888, so
+# playback is a cross-origin fetch and hls.js needs this header to read the playlist.
+hlsAllowOrigins: ['*']
+
+paths:
+  # Each stream publishes to its own sub-path, so this must be a regex pattern (~ prefix)
+  # rather than a literal "live" entry, or per-key paths won't match at all.
+  #
+  # The "/" is optional because DJI Fly joins its RTMP server and stream-key fields with no
+  # separator, producing "livedji_<key>" instead of "live/dji_<key>". Matching the key format
+  # exactly (dji_ + 32 alphanumerics) keeps the pattern just as tight as before - only a
+  # well-formed key can create a path - while letting the drone connect either way.
+  ~^live/?dji_[A-Za-z0-9]{32}$:
+    source: publisher

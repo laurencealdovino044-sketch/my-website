@@ -1,0 +1,61 @@
+{% extends "streams/base.html" %}
+{% block title %}Dashboard | DJI RTMP Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Streaming Dashboard</h1>
+    <a class="btn btn-primary" href="{% url 'streams:stream-create' %}">Create Stream</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6>Total Streams</h6><h2>{{ total_streams }}</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-success"><div class="card-body"><h6>Active Streams</h6><h2 class="text-success">{{ active_streams }}</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-secondary"><div class="card-body"><h6>Offline Streams</h6><h2 class="text-secondary">{{ offline_streams }}</h2></div></div></div>
+    <div class="col-md-3"><div class="card shadow-sm border-info"><div class="card-body"><h6>Connected Drones</h6><h2 class="text-info">{{ connected_drones }}</h2></div></div></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Live Status Cards</div>
+            <div class="card-body">
+                {% if live_streams %}
+                    <div class="row g-3">
+                        {% for stream in live_streams %}
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 bg-body-tertiary">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ stream.stream_name }}</strong>
+                                        <span class="badge text-bg-danger">LIVE</span>
+                                    </div>
+                                    <div class="small text-muted">Drone: {{ stream.drone|default:"N/A" }}</div>
+                                    <div class="small text-muted">Mission: {{ stream.mission|default:"N/A" }}</div>
+                                    <div class="small">Duration: {{ stream.stream_duration }}</div>
+                                    <a class="btn btn-sm btn-outline-primary mt-2" href="{% url 'streams:stream-viewer' stream.id %}">Open Viewer</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No live streams currently detected.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Recent Activity</div>
+            <ul class="list-group list-group-flush">
+                {% for item in recent_activity %}
+                    <li class="list-group-item">
+                        <div class="fw-semibold">{{ item.stream.stream_name }}</div>
+                        <div class="small text-muted">{{ item.get_event_display }} • {{ item.timestamp|date:"Y-m-d H:i:s" }}</div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No recent activity yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

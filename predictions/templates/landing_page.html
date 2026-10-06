@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}HI-TECH EGGPLANT - AI-Powered Eggplant Disease Detection{% endblock %}
+
+{% block extra_style %}
+<style>
+    .sidebar {
+        display: none;
+    }
+
+    .content-area {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .landing-page {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg);
+    }
+
+    .hero-panel {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-xl);
+        padding: 100px 60px;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        margin: 40px auto;
+        max-width: 1200px;
+        width: 90%;
+        isolation: isolate;
+    }
+
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80');
+        background-size: cover;
+        background-position: center;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.88) 0%, rgba(147, 51, 234, 0.82) 45%, rgba(236, 72, 153, 0.78) 100%);
+    }
+
+    .hero-title {
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
+        line-height: 1.15;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+
+    .hero-title .brand {
+        color: #fef08a;
+    }
+
+    .hero-copy {
+        max-width: 680px;
+        margin: 0 auto 36px;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero,
+    .btn-outline-hero {
+        min-width: 200px;
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-hero {
+        background: #fff;
+        color: var(--brand-dark);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        border: none;
+    }
+
+    .btn-outline-hero {
+        border: 1.5px solid rgba(255, 255, 255, 0.7);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-hero:hover {
+        color: var(--brand-dark);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-hero:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: #fff;
+        color: #fff;
+    }
+
+    .section-card {
+        background: transparent;
+        padding: 20px 60px 60px;
+        margin: 0 auto;
+        max-width: 1200px;
+        width: 90%;
+    }
+
+    .section-heading {
+        text-align: center;
+        font-size: clamp(1.75rem, 3vw, 2.4rem);
+        font-weight: 700;
+        margin-bottom: 36px;
+        color: var(--text);
+    }
+
+    .section-heading i {
+        color: var(--brand);
+        margin-right: 10px;
+    }
+
+    .feature-card {
+        height: 100%;
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow 0.15s ease;
+        border: 1px solid var(--border);
+    }
+
+    .feature-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+        font-weight: 700;
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+        color: var(--text);
+    }
+
+    .feature-card p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-size: 0.98rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 28px 20px;
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        border: 1px solid var(--border);
+    }
+
+    .stat-number {
+        color: var(--brand);
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 6px;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .footer-band {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 36px 20px;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .footer-band strong {
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .hero-panel,
+        .section-card {
+            width: 95%;
+            padding: 50px 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-panel {
+            padding: 60px 30px;
+            margin: 20px auto;
+        }
+
+        .section-card {
+            padding: 40px 30px;
+            margin: 20px auto;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-hero,
+        .btn-outline-hero {
+            width: 100%;
+            min-width: unset;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .feature-card {
+            padding: 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-copy {
+            font-size: 1rem;
+        }
+
+        .section-heading {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+    <section class="hero-panel fade-in shell-panel">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <h1 class="hero-title"><i class="fas fa-seedling"></i> <span class="brand">EGGPLANTiQ</span></h1>
+        <p class="hero-copy">Revolutionizing eggplant farming with AI-powered disease detection. Monitor, predict, and protect your crops with cutting-edge technology.</p>
+        <div class="hero-actions">
+            <a href="{% url 'login' %}" class="btn-hero"><i class="fas fa-user-plus me-2"></i> Get Started</a>
+            <a href="{% url 'login' %}" class="btn-outline-hero"><i class="fas fa-right-to-bracket me-2"></i> Login</a>
+        </div>
+    </section>
+
+    <section class="section-card fade-in" style="animation-delay: 0.1s;">
+        <h2 class="section-heading"><i class="fas fa-star"></i> Why Choose EGGPLANTiQ?</h2>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-brand/10 text-brand"><i class="fas fa-brain"></i></div>
+                    <h3>AI-Powered Detection</h3>
+                    <p>Advanced machine learning algorithms accurately identify eggplant diseases from images with high precision.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-sky/10 text-sky"><i class="fas fa-camera"></i></div>
+                    <h3>Live Camera Scan</h3>
+                    <p>Use your device's camera for real-time disease detection, making field inspections faster and easier.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-leaf/10 text-leaf"><i class="fas fa-chart-line"></i></div>
+                    <h3>Detailed Analytics</h3>
+                    <p>Get comprehensive reports with confidence scores and personalized treatment recommendations.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-sun/10 text-sun"><i class="fas fa-history"></i></div>
+                    <h3>Prediction History</h3>
+                    <p>Track all your disease detection results and monitor crop health trends over time.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: rgba(236, 72, 153, 0.1); color: var(--brand-2);"><i class="fas fa-robot"></i></div>
+                    <h3>Automated Systems</h3>
+                    <p>Integrated watering and spraying automation for proactive crop protection and maintenance.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon bg-berry/10 text-berry"><i class="fas fa-mobile-screen"></i></div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Responsive design ensures seamless experience across all devices - desktop, tablet, and mobile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-card fade-in" style="animation-delay: 0.2s;">
+        <div class="rounded-3xl overflow-hidden shadow-md" style="border-radius: var(--radius-xl);">
+            <div class="grid md:grid-cols-2">
+                <div class="relative min-h-[280px]">
+                    <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1000&q=75" alt="Seedlings growing in a nursery" class="absolute inset-0 w-full h-full object-cover" />
+                </div>
+                <div class="p-10 flex flex-col justify-center" style="background: var(--brand-gradient);">
+                    <h2 class="text-2xl font-bold text-white mb-6">Trusted by Farmers Worldwide</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div><div class="text-3xl font-bold text-white">10K+</div><div class="text-white/80 text-sm font-semibold mt-1">Images Analyzed</div></div>
+                        <div><div class="text-3xl font-bold text-white">95%</div><div class="text-white/80 text-sm font-semibold mt-1">Accuracy Rate</div></div>
+                        <div><div class="text-3xl font-bold text-white">500+</div><div class="text-white/80 text-sm font-semibold mt-1">Active Users</div></div>
+                        <div><div class="text-3xl font-bold text-white">24/7</div><div class="text-white/80 text-sm font-semibold mt-1">Support Available</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-band">
+        <strong>EGGPLANTiQ</strong> empowers farmers with AI technology for healthier, more productive eggplant crops.
+    </div>
+</div>
+{% endblock %}

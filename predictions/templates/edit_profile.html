@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .edit-profile-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .edit-profile-panel {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .edit-profile-header h2 {
+        margin: 0 0 0.4rem;
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .edit-profile-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .edit-profile-panel .form-label {
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .edit-profile-panel .form-control {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        padding: 0.65rem 0.9rem;
+    }
+
+    .edit-profile-panel .form-control:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 0.2rem var(--brand-soft);
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        width: 100%;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
+        .edit-profile-panel {
+            padding: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-wrap fade-in">
+    <section class="edit-profile-panel">
+        <div class="edit-profile-header">
+            <h2><i class="fas fa-user-pen"></i> Edit Profile</h2>
+            <p>Update your account details here.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <button type="submit" class="btn btn-custom">Save Changes</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

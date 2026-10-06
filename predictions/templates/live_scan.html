@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Main System - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .live-scan-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .live-scan-panel {
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 40px;
+        border: 1px solid var(--border);
+    }
+
+    .live-scan-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .live-scan-header h2 {
+        margin: 0 0 12px;
+        color: var(--text);
+        font-weight: 700;
+        font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+
+    .live-scan-header h2 i {
+        color: var(--accent);
+        margin-right: 10px;
+    }
+
+    .alert {
+        border-radius: var(--radius-md);
+        padding: 20px;
+        font-weight: 500;
+        background: rgba(22, 166, 115, 0.08);
+        color: #14624a;
+        border: 1px solid rgba(22, 166, 115, 0.2);
+        text-align: left;
+        margin-bottom: 24px;
+    }
+
+    .btn-custom {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 12px 26px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-custom:hover {
+        color: #fff;
+        background: var(--brand-dark);
+        box-shadow: var(--shadow-md);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="live-scan-wrap">
+    <section class="live-scan-panel">
+        <div class="live-scan-header">
+            <h2><i class="fas fa-leaf"></i> Main System</h2>
+            <p class="text-muted mb-0">Live streaming has been removed. Use the main image upload workflow to analyze your plants.</p>
+        </div>
+
+        <div class="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            The live camera view is no longer part of the system. Continue with the disease detection workflow from the main prediction page.
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'predict' %}" class="btn-custom">
+                <i class="fas fa-arrow-right me-2"></i>Open Disease Detection
+            </a>
+        </div>
+    </section>
+</div>
+{% endblock %}

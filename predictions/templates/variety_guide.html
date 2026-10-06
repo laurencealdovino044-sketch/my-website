@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+
+{% block title %}Variety Guide - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .guide-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .guide-header h2 {
+        margin: 0 0 0.4rem;
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .guide-header p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .guide-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+    }
+
+    .guide-progress-bar {
+        flex: 1;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--surface-alt);
+        overflow: hidden;
+    }
+
+    .guide-progress-fill {
+        height: 100%;
+        background: var(--brand-gradient, var(--brand));
+        border-radius: 999px;
+        transition: width 0.3s ease;
+    }
+
+    .guide-progress-label {
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+
+    .guide-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .guide-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 0;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .guide-item[open],
+    .guide-item.detected {
+        border-color: rgba(109, 74, 255, 0.35);
+    }
+
+    .guide-item.detected {
+        background: var(--brand-soft);
+    }
+
+    .guide-item-header {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .guide-item-header::-webkit-details-marker {
+        display: none;
+    }
+
+    .guide-check {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--border);
+        color: transparent;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .guide-item.detected .guide-check {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #fff;
+    }
+
+    .guide-name {
+        flex: 1;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .guide-name i {
+        color: var(--brand);
+        margin-right: 0.5rem;
+    }
+
+    .guide-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .guide-item.detected .guide-meta {
+        color: var(--brand);
+        font-weight: 600;
+    }
+
+    .guide-caret {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .guide-details {
+        padding: 0 1.25rem 1.25rem 3.7rem;
+        color: var(--text-muted);
+        line-height: 1.65;
+        font-size: 0.9rem;
+    }
+
+    .guide-details ul {
+        margin: 0.25rem 0 0.75rem;
+        padding-left: 1.1rem;
+    }
+
+    .guide-empty {
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+        color: var(--text-muted);
+        margin-top: 1.5rem;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+        color: var(--text);
+        font-size: 1rem;
+        margin: 2rem 0 0.75rem;
+    }
+
+    .section-title i {
+        color: var(--brand);
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card .stat-icon {
+        font-size: 0.95rem;
+        color: var(--brand);
+        margin-bottom: 0.4rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+    }
+
+    .stat-card.is-loss .stat-icon,
+    .stat-card.is-loss .stat-value {
+        color: var(--danger);
+    }
+
+    .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .breakdown-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.88rem;
+        color: var(--text);
+    }
+
+    .breakdown-row:last-child {
+        border-bottom: none;
+    }
+
+    .breakdown-row .row-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-size: 0.72rem;
+        flex-shrink: 0;
+    }
+
+    .breakdown-row .row-name {
+        flex: 1;
+    }
+
+    .breakdown-row .row-meta {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+    }
+
+    .breakdown-row .row-count {
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+    }
+
+    .badge-pill {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        background: var(--surface-alt);
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+    }
+
+    .badge-pill.insect {
+        background: rgba(234, 145, 0, 0.12);
+        color: #b46a00;
+        border-color: rgba(234, 145, 0, 0.3);
+    }
+
+    .incident-form {
+        display: grid;
+        grid-template-columns: 1.4fr 0.6fr 1.6fr auto;
+        gap: 0.6rem;
+        align-items: end;
+    }
+
+    .incident-form label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .incident-form select,
+    .incident-form input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0.55rem 0.7rem;
+        font-size: 0.88rem;
+        background: var(--surface);
+        color: var(--text);
+    }
+
+    .incident-form button {
+        border: none;
+        border-radius: var(--radius-md);
+        background: var(--brand);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.88rem;
+        padding: 0.55rem 1.1rem;
+        white-space: nowrap;
+    }
+
+    .incident-form button:hover {
+        background: var(--brand-dark);
+    }
+
+    @media (max-width: 700px) {
+        .incident-form {
+            grid-template-columns: 1fr;
+        }
+    }
+    .variety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .variety-card h3 { font-size: 1.25rem; margin: 0.85rem 0; color: var(--text); }
+    .variety-card p { color: var(--text-muted); line-height: 1.65; }
+    .variety-source { margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="guide-wrap fade-in">
+    <div class="guide-header">
+        <h2><i class="fas fa-seedling"></i> Philippine Eggplant Varieties</h2>
+        <p>Explore eggplant varieties grown in the Philippines and their plant, fruit, and yield characteristics.</p>
+    </div>
+
+    <div class="variety-grid">
+        <article class="panel variety-card">
+            <span class="badge-pill">F1 hybrid</span>
+            <h3>Calixto F1</h3>
+            <p>Known for tall plants and heavy fruit yield, making it a popular choice among farmers.</p>
+            <p class="mb-0"><strong>Key traits:</strong> Tall growth and high yield potential.</p>
+        </article>
+        <article class="panel variety-card">
+            <span class="badge-pill">F1 hybrid</span>
+            <h3>Long Purple F1</h3>
+            <p>Known for wide fruit diameter and suitability for producing marketable fruits.</p>
+            <p class="mb-0"><strong>Key traits:</strong> Fruit size and market suitability.</p>
+        </article>
+        <article class="panel variety-card">
+            <span class="badge-pill">F1 hybrid</span>
+            <h3>Warhawk F1</h3>
+            <p>Recognized for prolific growth and attractive purple fruit color.</p>
+            <p class="mb-0"><strong>Key traits:</strong> Productive growth and purple fruit.</p>
+        </article>
+    </div>
+    <p class="variety-source">Variety descriptions: <a href="https://nutritionhealthinfo.com/eggplant-types/" target="_blank" rel="noopener noreferrer">Nutrition Health Info ? Eggplant Types</a>.</p>
+    <p style="color: var(--text-muted);">These varieties offer different growth patterns, fruit sizes, and yield potential for local farming and markets.</p>
+    <a class="btn btn-primary" href="{% url 'home' %}#variety">Choose a variety for a new season</a>
+
+    <div class="section-title"><i class="fas fa-heart-pulse"></i> Season health and disease tracking</div>
+    {% if season %}<p style="color: var(--text-muted);">Current variety: <strong>{{ season.variety }}</strong></p>{% endif %}
+
+    {% if season %}
+        <div class="guide-progress">
+            <div class="guide-progress-label">{{ detected_count }} / {{ total_count }} detected</div>
+            <div class="guide-progress-bar">
+                <div class="guide-progress-fill" style="width: {% widthratio detected_count total_count 100 %}%;"></div>
+            </div>
+        </div>
+    {% else %}
+        <div class="guide-empty">
+            <i class="fas fa-seedling mb-2" style="font-size: 1.5rem; color: var(--brand);"></i><br>
+            No active season. <a href="{% url 'home' %}">Start a new season</a> to track disease detections here.
+        </div>
+    {% endif %}
+
+    {% if analytics %}
+        <div class="section-title"><i class="fas fa-chart-simple"></i> Season Analytics</div>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-viruses"></i></div>
+                <div class="stat-value">{{ analytics.total_detections }}</div>
+                <div class="stat-label">Total detections</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-bug"></i></div>
+                <div class="stat-value">{{ analytics.insect_type_count }}</div>
+                <div class="stat-label">Insect types seen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-virus"></i></div>
+                <div class="stat-value">{{ analytics.disease_type_count }}</div>
+                <div class="stat-label">Disease types seen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-spray-can-sparkles"></i></div>
+                <div class="stat-value">{{ analytics.spray_count }}</div>
+                <div class="stat-label">Chemical sprays</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-flask"></i></div>
+                <div class="stat-value">{{ analytics.fertilizer_count }}</div>
+                <div class="stat-label">Fertilizer applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-droplet"></i></div>
+                <div class="stat-value">{{ analytics.watering_count }}</div>
+                <div class="stat-label">Waterings</div>
+            </div>
+            <div class="stat-card is-loss">
+                <div class="stat-icon"><i class="fas fa-seedling"></i></div>
+                <div class="stat-value">{{ analytics.seeds_not_germinated }}</div>
+                <div class="stat-label">Seeds didn't grow</div>
+            </div>
+            <div class="stat-card is-loss">
+                <div class="stat-icon"><i class="fas fa-paw"></i></div>
+                <div class="stat-value">{{ analytics.eaten_by_animals }}</div>
+                <div class="stat-label">Eaten by animals</div>
+            </div>
+        </div>
+
+        <div class="section-title"><i class="fas fa-list-ul"></i> Detections this season</div>
+        <div class="panel">
+            {% if analytics.detection_rows %}
+                {% for row in analytics.detection_rows %}
+                    <div class="breakdown-row">
+                        <span class="row-icon"><i class="fas fa-{{ row.icon }}"></i></span>
+                        <span class="row-name">
+                            {{ row.name }}
+                            <span class="badge-pill {% if row.is_insect %}insect{% endif %}">{% if row.is_insect %}Insect{% else %}Disease{% endif %}</span>
+                            {% if row.last_confidence %}<span class="row-meta d-block">Last confidence {{ row.last_confidence }}%</span>{% endif %}
+                        </span>
+                        <span class="row-count">{{ row.count }}&times;</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="mb-0" style="color: var(--text-muted); font-size: 0.88rem;">Nothing detected yet. Run the Predict tool on a leaf photo to start tracking.</p>
+            {% endif %}
+        </div>
+
+        <div class="section-title"><i class="fas fa-clipboard-check"></i> Crop losses</div>
+        <div class="panel">
+            <form method="POST" action="{% url 'log_season_incident' %}" class="incident-form mb-3">
+                {% csrf_token %}
+                <div>
+                    <label for="incident_type">What happened?</label>
+                    <select id="incident_type" name="incident_type" required>
+                        {% for type in incident_types %}
+                            <option value="{{ type.key }}">{{ type.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="quantity">How many</label>
+                    <input id="quantity" name="quantity" type="number" min="1" value="1" required>
+                </div>
+                <div>
+                    <label for="note">Note (optional)</label>
+                    <input id="note" name="note" type="text" placeholder="e.g. birds in the north row">
+                </div>
+                <button type="submit"><i class="fas fa-plus me-1"></i> Log</button>
+            </form>
+
+            {% for row in analytics.incident_rows %}
+                <div class="breakdown-row">
+                    <span class="row-icon"><i class="fas fa-{{ row.icon }}"></i></span>
+                    <span class="row-name">{{ row.label }}</span>
+                    <span class="row-count">{{ row.quantity }}</span>
+                </div>
+            {% endfor %}
+
+            {% if analytics.incident_log %}
+                <div class="section-title" style="margin: 1.25rem 0 0.5rem; font-size: 0.85rem;"><i class="fas fa-clock-rotate-left"></i> Recent entries</div>
+                {% for entry in analytics.incident_log %}
+                    <div class="breakdown-row">
+                        <span class="row-icon"><i class="fas fa-{{ entry.icon }}"></i></span>
+                        <span class="row-name">
+                            {{ entry.label }}
+                            {% if entry.note %}<span class="row-meta d-block">{{ entry.note }}</span>{% endif %}
+                        </span>
+                        <span class="row-count">{{ entry.quantity }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="section-title"><i class="fas fa-clipboard-list"></i> Disease checklist</div>
+    {% endif %}
+
+    <div class="guide-list">
+        {% for item in guide_items %}
+            <details class="guide-item {% if item.detected %}detected{% endif %}" {% if item.detected %}open{% endif %}>
+                <summary class="guide-item-header">
+                    <span class="guide-check"><i class="fas fa-check"></i></span>
+                    <span class="guide-name"><i class="fas fa-{{ item.icon }}"></i>{{ item.name }}</span>
+                    <span class="guide-meta">
+                        {% if item.detected %}
+                            Detected {{ item.detection.count }}&times; &middot; last {{ item.detection.last_confidence }}%
+                        {% else %}
+                            Not detected
+                        {% endif %}
+                    </span>
+                    <i class="fas fa-chevron-down guide-caret"></i>
+                </summary>
+                <div class="guide-details">
+                    <strong>About:</strong> {{ item.about }}<br><br>
+                    <strong>{{ item.medicine_label }}:</strong>
+                    <ul>
+                        {% for med in item.medicine %}<li>{{ med }}</li>{% endfor %}
+                    </ul>
+                    <strong>Recommendation:</strong> {{ item.recommendation }}
+                </div>
+            </details>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

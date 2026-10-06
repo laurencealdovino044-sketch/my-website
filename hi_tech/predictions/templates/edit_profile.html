@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .edit-profile-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .edit-profile-panel {
+        background: rgba(255, 255, 255, 0.96);
+        color: #203126;
+        border-radius: 26px;
+        box-shadow: 0 24px 60px rgba(13, 7, 19, 0.2);
+        padding: 2rem;
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .edit-profile-header h2 {
+        margin: 0 0 0.5rem;
+        color: #173f2a;
+        font-weight: 800;
+    }
+
+    .edit-profile-header p {
+        margin: 0;
+        color: #5c7367;
+    }
+
+    .btn-custom {
+        background: #1f7a4f;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 0.9rem 1.25rem;
+        font-weight: 700;
+        width: 100%;
+    }
+
+    .btn-custom:hover {
+        background: #175e3d;
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        .edit-profile-panel {
+            padding: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-wrap fade-in">
+    <section class="edit-profile-panel">
+        <div class="edit-profile-header">
+            <h2><i class="fas fa-user-pen"></i> Edit Profile</h2>
+            <p>Update your account details here.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label fw-bold">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <button type="submit" class="btn btn-custom">Save Changes</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

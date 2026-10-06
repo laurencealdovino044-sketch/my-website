@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - HI-TECH EGGPLANT{% endblock %}
+
+{% block extra_style %}
+<style>
+    .inbox-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+    }
+
+    .inbox-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .inbox-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 1.5rem 1.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .inbox-head h2 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .inbox-head p {
+        margin: 0.25rem 0 0;
+        color: var(--text-muted);
+    }
+
+    .inbox-head-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .inbox-head-actions .btn {
+        border-radius: var(--radius-md);
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+    }
+
+    .inbox-head-actions .btn-primary-soft {
+        background: var(--brand);
+        color: #fff;
+        border-color: transparent;
+    }
+
+    .inbox-head-actions .btn-primary-soft:hover {
+        background: var(--brand-dark);
+        color: #fff;
+    }
+
+    .inbox-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .inbox-row {
+        display: flex;
+        gap: 14px;
+        padding: 1.1rem 1.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .inbox-row:last-child {
+        border-bottom: none;
+    }
+
+    .inbox-row.unread {
+        background: var(--brand-soft);
+    }
+
+    .inbox-icon {
+        width: 40px;
+        height: 40px;
+        flex: none;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--surface-alt);
+        color: var(--text-muted);
+    }
+
+    .inbox-icon.level-danger {
+        background: var(--danger-soft);
+        color: #97232a;
+    }
+
+    .inbox-icon.level-warning {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+
+    .inbox-icon.level-success {
+        background: rgba(22, 166, 115, 0.14);
+        color: #0e7a56;
+    }
+
+    .inbox-icon.level-info {
+        background: var(--brand-soft);
+        color: var(--brand-dark);
+    }
+
+    .inbox-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .inbox-title {
+        margin: 0;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .inbox-text {
+        margin: 0.2rem 0 0;
+        color: var(--text-muted);
+        overflow-wrap: anywhere;
+    }
+
+    .inbox-meta {
+        margin-top: 0.45rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .inbox-chip {
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        padding: 0.1rem 0.6rem;
+        font-weight: 600;
+    }
+
+    .inbox-empty {
+        padding: 3.5rem 1.75rem;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .inbox-empty i {
+        font-size: 2.5rem;
+        color: var(--border);
+        display: block;
+        margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+        .inbox-head,
+        .inbox-row {
+            padding-left: 1.1rem;
+            padding-right: 1.1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="inbox-wrap fade-in">
+    <section class="inbox-panel">
+        <header class="inbox-head">
+            <div>
+                <h2><i class="fas fa-bell"></i> Notifications</h2>
+                <p>
+                    {% if unread_count %}
+                        {{ unread_count }} unread
+                    {% else %}
+                        You are all caught up.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="inbox-head-actions">
+                {% if unread_count %}
+                    <form method="POST" action="{% url 'mark_notifications_read' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary-soft">
+                            <i class="fas fa-check-double"></i> Mark all read
+                        </button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'notification_settings' %}" class="btn">
+                    <i class="fas fa-gear"></i> Settings
+                </a>
+            </div>
+        </header>
+
+        {% if notifications %}
+            <ul class="inbox-list">
+                {% for notification in notifications %}
+                    <li class="inbox-row {% if not notification.is_read %}unread{% endif %}">
+                        <span class="inbox-icon level-{{ notification.level }}">
+                            {% if notification.level == 'danger' %}
+                                <i class="fas fa-triangle-exclamation"></i>
+                            {% elif notification.level == 'warning' %}
+                                <i class="fas fa-circle-exclamation"></i>
+                            {% elif notification.level == 'success' %}
+                                <i class="fas fa-circle-check"></i>
+                            {% else %}
+                                <i class="fas fa-circle-info"></i>
+                            {% endif %}
+                        </span>
+                        <div class="inbox-body">
+                            <p class="inbox-title">{{ notification.title }}</p>
+                            <p class="inbox-text">{{ notification.message }}</p>
+                            <div class="inbox-meta">
+                                <span class="inbox-chip">{{ notification.get_category_display }}</span>
+                                <span>{{ notification.created_at|date:"M d, Y g:i A" }}</span>
+                                {% if notification.link_url %}
+                                    <a href="{{ notification.link_url }}">Open</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="inbox-empty">
+                <i class="fas fa-bell-slash"></i>
+                Nothing here yet. Alerts about disease detections and scheduled applications
+                will appear on this page.
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
